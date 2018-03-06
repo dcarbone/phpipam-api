@@ -1,0 +1,21 @@
+{
+  "name": "ena/phpipam-api",
+  "description": "PHPIPAM SDK",
+  "type": "library",
+  "license": "MPL-2.0",
+  "authors": [
+    {
+      "name": "Daniel Paul Carbone",
+      "email": "dcarbone@ena.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=7.1",
+    "guzzlehttp/guzzle": "^6.3",
+    "dcarbone/php-consul-api": "@stable"
+  },
+  "autoload":{
+    "ENA\\PHPIPAMAPI\\": "src/"
+  }
+}

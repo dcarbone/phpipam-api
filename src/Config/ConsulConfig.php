@@ -1,0 +1,304 @@
+<?php namespace ENA\PHPIPAMAPI\Config;
+
+use DCarbone\PHPConsulAPI\Consul;
+use DCarbone\PHPConsulAPI\Health\ServiceEntry;
+use DCarbone\PHPConsulAPI\QueryOptions;
+
+/**
+ * Class ConsulConfig
+ * @package ENA\PHPIPAMAPI\Config
+ */
+class ConsulConfig extends Config {
+    const DEFAULT_SERVICE_NAME = 'phpipam';
+    const DEFAULT_SERVICE_TAG = '';
+
+    /** @var string */
+    protected $serviceName;
+    /** @var string */
+    protected $serviceTag;
+    /** @var bool */
+    protected $healthyOnly;
+    /** @var \DCarbone\PHPConsulAPI\QueryOptions */
+    protected $queryOptions;
+    /** @var string */
+    protected $usernameKey;
+    /** @var string */
+    protected $passwordKey;
+    /** @var string */
+    protected $appIDKey;
+    /** @var string */
+    protected $appKeyKey;
+
+    /** @var \DCarbone\PHPConsulAPI\Health\ServiceEntry */
+    private $service;
+
+    /** @var \DCarbone\PHPConsulAPI\Consul */
+    private $consul;
+
+    /**
+     * ConsulConfig constructor.
+     * @param array|null $config
+     * @param \DCarbone\PHPConsulAPI\Consul|null $consul
+     */
+    public function __construct(array $config, ?Consul $consul) {
+        $this->processConfig($config);
+        $this->consul = $consul;
+        $this->validate();
+    }
+
+    /**
+     * Returns host, preferring configured and will otherwise attempt to fetch service from Consul Health API
+     *
+     * @return string
+     */
+    public function getHost(): string {
+        static $fetched = false;
+        if (!$fetched && '' === $this->host) {
+            // should be good enough when used in conjunction with validate on construct
+            $this->parseService();
+            $fetched = true;
+        }
+        return $this->host;
+    }
+
+    /**
+     * Returns port, preferring configured and will otherwise attempt to fetch service from Consul Health API
+     *
+     * @return int
+     */
+    public function getPort(): int {
+        static $fetched = false;
+        if (!$fetched && 0 === $this->port) {
+            // should be good enough when used in conjunction with validate on construct
+            $this->parseService();
+            $fetched = true;
+        }
+        return $this->port;
+    }
+
+    /**
+     * Returns user username, preferring configured and will otherwise attempt to fetch usernamekey from Consul
+     *
+     * @return string
+     */
+    public function getUsername(): string {
+        if ('' === $this->username) {
+            $this->username = $this->getKeyValue($this->getUsernameKey());
+        }
+        return $this->username;
+    }
+
+    /**
+     * Returns user password, preferring configured and will otherwise attempt to fetch passwordkey from Consul
+     *
+     * @return string
+     */
+    public function getPassword(): string {
+        if ('' === $this->password) {
+            $this->password = $this->getKeyValue($this->getPasswordKey());
+        }
+        return $this->password;
+    }
+
+    /**
+     * Returns api app id, preferring configured and will otherwise attempt to fetch appidkey from Consul
+     *
+     * @return string
+     */
+    public function getAppID(): string {
+        if ('' === $this->appID) {
+            $this->appID = $this->getKeyValue($this->getAppIDKey());
+        }
+        return $this->appID;
+    }
+
+    /**
+     * Returns api app key, preferring configured and will otherwise attempt to fetch appkeykey from Consul
+     *
+     * @return string
+     */
+    public function getAppKey(): string {
+        if ('' === $this->appKey) {
+            $this->appKey = $this->getKeyValue($this->getAppKeyKey());
+        }
+        return $this->appKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getServiceName(): string {
+        return $this->serviceName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getServiceTag(): string {
+        return $this->serviceTag;
+    }
+
+    /**
+     * @return bool
+     */
+    public function useHealthyOnly(): bool {
+        return $this->healthyOnly;
+    }
+
+    /**
+     * @return \DCarbone\PHPConsulAPI\QueryOptions|null
+     */
+    public function getQueryOptions(): ?QueryOptions {
+        return $this->queryOptions;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsernameKey(): string {
+        return $this->usernameKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPasswordKey(): string {
+        return $this->passwordKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAppIDKey(): string {
+        return $this->appIDKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAppKeyKey(): string {
+        return $this->appKeyKey;
+    }
+
+    /**
+     * @return \DCarbone\PHPConsulAPI\Consul
+     */
+    protected function getConsul(): Consul {
+        if (!isset($this->consul)) {
+            $this->consul = new Consul();
+        }
+        return $this->consul;
+    }
+
+    /**
+     * @param string $key
+     * @return string
+     */
+    protected function getKeyValue(string $key): string {
+        /** @var \DCarbone\PHPConsulAPI\KV\KVPair $kvp */
+        /** @var \DCarbone\PHPConsulAPI\QueryMeta $qm */
+        /** @var \DCarbone\PHPConsulAPI\Error $err */
+        [$kvp, $qm, $err] = $this->getConsul()->KV->get($key);
+        if (null !== $err) {
+            throw new \RuntimeException(sprintf(
+                'Error querying Consul for KV "%s": %s',
+                $key,
+                $err
+            ));
+        } else if (null === $kvp || '' === (string)$kvp->Value) {
+            throw new \RuntimeException(sprintf('Key "%s" is empty', $key));
+        }
+        return $kvp->Value;
+    }
+
+    /**
+     * @return \DCarbone\PHPConsulAPI\Health\ServiceEntry
+     */
+    protected function getService(): ServiceEntry {
+        if (!isset($this->service)) {
+            /** @var \DCarbone\PHPConsulAPI\Health\ServiceEntry[] $svcs */
+            /** @var \DCarbone\PHPConsulAPI\QueryMeta $qm */
+            /** @var \DCarbone\PHPConsulAPI\Error $err */
+            [$svcs, $qm, $err] = $this
+                ->getConsul()
+                ->Health
+                ->service($this->serviceName, $this->serviceTag, $this->healthyOnly, $this->queryOptions);
+            if (null !== $err) {
+                throw new \RuntimeException(sprintf(
+                    'Error querying Consul for %s service with name "%s" and tag "%s": %s',
+                    $this->useHealthyOnly() ? 'healthy' : 'any',
+                    $this->getServiceName(),
+                    $this->getServiceTag(),
+                    $err
+                ));
+            }
+            if (0 === ($cnt = count($svcs))) {
+                throw new \RuntimeException(sprintf(
+                    'Unable to find %s service with name "%s" and tag "%s" found in Consul',
+                    $this->useHealthyOnly() ? 'healthy' : 'any',
+                    $this->getServiceName(),
+                    $this->getServiceTag()
+                ));
+            }
+            $this->service = reset($svcs);
+        }
+        return $this->service;
+    }
+
+    /**
+     * Will attempt to fetch service from Consul and localize address and port values from service definition
+     */
+    protected function parseService(): void {
+        $service = $this->getService();
+        $this->host = $service->Service->Address;
+        $this->port = $service->Service->Port;
+    }
+
+    /**
+     * @param array $config
+     */
+    protected function processConfig(array $config): void {
+        parent::processConfig($config);
+        $this->serviceName = trim((string)$config['servicename'] ?? '');
+        $this->serviceTag = trim((string)$config['servicetag'] ?? '');
+        $this->healthyOnly = (bool)($config['healthyonly'] ?? true);
+        if (isset($config['queryoptions'])) {
+            if (is_array($config['queryoptions'])) {
+                $this->queryOptions = new QueryOptions($config['queryoptions']);
+            } else {
+                $this->queryOptions = $config['queryoptions'];
+            }
+        } else {
+            $this->queryOptions = null;
+        }
+        $this->usernameKey = trim((string)$config['usernamekey'] ?? '');
+        $this->passwordKey = trim((string)$config['passwordkey'] ?? '');
+        $this->appIDKey = trim((string)$config['appidkey'] ?? '');
+        $this->appKeyKey = trim((string)$config['appkeykey'] ?? '');
+    }
+
+    protected function validate(): void {
+        if ('' === $this->host && 0 === $this->port && '' === $this->serviceName) {
+            throw new \RuntimeException('servicename must be defined when host and port are not');
+        }
+        if ('' !== $this->serviceName && ('' !== $this->host || 0 !== $this->port)) {
+            throw new \DomainException('defined host and port will be overridden by value from configured Consul service');
+        }
+        if (null !== $this->queryOptions &&
+            !(is_object($this->queryOptions || $this->queryOptions instanceof QueryOptions))) {
+            throw new \RuntimeException('queryoptions must be null, an array to construct a QueryOptions class with, or an instance of QueryOptions');
+        }
+        if ('' === $this->username && '' === $this->usernameKey) {
+            throw new \RuntimeException('usernamekey must be defined when username is not');
+        }
+        if ('' === $this->password && '' === $this->passwordKey) {
+            throw new \RuntimeException('passwordkey must be defined when password is not');
+        }
+        if ('' === $this->appID && '' === $this->appIDKey) {
+            throw new \RuntimeException('appidkey must be defined when appid is not');
+        }
+        if ('' === $this->appKey && '' === $this->appKeyKey) {
+            throw new \RuntimeException('appkeykey must be defined when appkey is not');
+        }
+    }
+}
