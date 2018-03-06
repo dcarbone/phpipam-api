@@ -1,5 +1,8 @@
 <?php namespace ENA\PHPIPAMAPI\Config;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
+
 /**
  * Class Config
  * @package ENA\PHPIPAMAPI\Config
@@ -20,13 +23,18 @@ class Config implements ConfigProvider {
     /** @var string */
     protected $appKey;
 
+    /** @var \GuzzleHttp\ClientInterface */
+    protected $client;
+
     /**
      * Config constructor.
      * @param array $config
+     * @param \GuzzleHttp\ClientInterface|null $client
      */
-    public function __construct(array $config) {
+    public function __construct(array $config, ?ClientInterface $client = null) {
         $this->processConfig($config);
         $this->validate();
+        $this->client = $client;
     }
 
     /**
@@ -90,6 +98,18 @@ class Config implements ConfigProvider {
      */
     public function getAppKey(): string {
         return $this->appKey;
+    }
+
+    /**
+     * Returns GuzzleHttp-compatible http client, optionally constructing a new one if one was not provided at construction
+     *
+     * @return \GuzzleHttp\ClientInterface
+     */
+    public function getClient(): ClientInterface {
+        if (!isset($this->client)) {
+            $this->client = new Client();
+        }
+        return $this->client;
     }
 
     /**

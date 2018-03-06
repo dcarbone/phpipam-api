@@ -1,5 +1,7 @@
 <?php namespace ENA\PHPIPAMAPI\Config;
 
+use GuzzleHttp\ClientInterface;
+
 /**
  * Interface ConfigProvider
  * @package ENA\PHPIPAMAPI\Config
@@ -39,4 +41,9 @@ interface ConfigProvider {
      * @return string
      */
     public function getAppKey(): string;
+
+    /**
+     * @return \GuzzleHttp\ClientInterface
+     */
+    public function getClient(): ClientInterface;
 }

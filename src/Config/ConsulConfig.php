@@ -37,10 +37,10 @@ class ConsulConfig extends Config {
 
     /**
      * ConsulConfig constructor.
-     * @param array|null $config
+     * @param array $config
      * @param \DCarbone\PHPConsulAPI\Consul|null $consul
      */
-    public function __construct(array $config, ?Consul $consul) {
+    public function __construct(array $config, ?Consul $consul = null) {
         $this->processConfig($config);
         $this->consul = $consul;
         $this->validate();
