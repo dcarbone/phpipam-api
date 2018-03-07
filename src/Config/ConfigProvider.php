@@ -40,10 +40,17 @@ interface ConfigProvider {
     /**
      * @return string
      */
-    public function getAppKey(): string;
+    public function getAppCode(): string;
 
     /**
      * @return \GuzzleHttp\ClientInterface
      */
     public function getClient(): ClientInterface;
+
+    /**
+     * Whether to silence all logging
+     *
+     * @return bool
+     */
+    public function silent(): bool;
 }

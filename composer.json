@@ -13,7 +13,11 @@
   "require": {
     "php": ">=7.1",
     "guzzlehttp/guzzle": "^6.3",
-    "dcarbone/php-consul-api": "@stable"
+    "dcarbone/php-consul-api": "@stable",
+    "psr/log": "@stable"
+  },
+  "require-dev": {
+    "myena/default-logger": "@stable"
   },
   "autoload":{
     "ENA\\PHPIPAMAPI\\": "src/"

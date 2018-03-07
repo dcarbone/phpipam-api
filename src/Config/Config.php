@@ -21,7 +21,10 @@ class Config implements ConfigProvider {
     /** @var string */
     protected $appID;
     /** @var string */
-    protected $appKey;
+    protected $appCode;
+
+    /** @var bool */
+    protected $silent;
 
     /** @var \GuzzleHttp\ClientInterface */
     protected $client;
@@ -92,12 +95,12 @@ class Config implements ConfigProvider {
     }
 
     /**
-     * Returns configured api app key
+     * Returns configured api app code
      *
      * @return string
      */
-    public function getAppKey(): string {
-        return $this->appKey;
+    public function getAppCode(): string {
+        return $this->appCode;
     }
 
     /**
@@ -113,6 +116,13 @@ class Config implements ConfigProvider {
     }
 
     /**
+     * @return bool
+     */
+    public function silent(): bool {
+        return $this->silent;
+    }
+
+    /**
      * Takes provided config input and defines local vars, optionally setting empty or default values if fields are omitted.
      *
      * @param array $config
@@ -124,7 +134,8 @@ class Config implements ConfigProvider {
         $this->username = trim((string)($config['username'] ?? ''));
         $this->password = trim((string)($config['password'] ?? ''));
         $this->appID = trim((string)($config['appid'] ?? ''));
-        $this->appKey = trim((string)($config['appkey'] ?? ''));
+        $this->appCode = trim((string)($config['appcode'] ?? ''));
+        $this->silent = (bool)($config['silent'] ?? false);
     }
 
     /**
@@ -146,8 +157,8 @@ class Config implements ConfigProvider {
         if ('' === $this->appID) {
             throw new \InvalidArgumentException('appid cannot be empty');
         }
-        if ('' === $this->appKey) {
-            throw new \InvalidArgumentException('appkey cannot be empty');
+        if ('' === $this->appCode) {
+            throw new \InvalidArgumentException('appcode cannot be empty');
         }
     }
 }

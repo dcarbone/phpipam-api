@@ -3,14 +3,13 @@
 use DCarbone\PHPConsulAPI\Consul;
 use DCarbone\PHPConsulAPI\Health\ServiceEntry;
 use DCarbone\PHPConsulAPI\QueryOptions;
+use GuzzleHttp\ClientInterface;
 
 /**
  * Class ConsulConfig
  * @package ENA\PHPIPAMAPI\Config
  */
 class ConsulConfig extends Config {
-    const DEFAULT_SERVICE_NAME = 'phpipam';
-    const DEFAULT_SERVICE_TAG = '';
 
     /** @var string */
     protected $serviceName;
@@ -27,22 +26,24 @@ class ConsulConfig extends Config {
     /** @var string */
     protected $appIDKey;
     /** @var string */
-    protected $appKeyKey;
+    protected $appCodeKey;
+
+    /** @var \DCarbone\PHPConsulAPI\Consul */
+    protected $consul;
 
     /** @var \DCarbone\PHPConsulAPI\Health\ServiceEntry */
     private $service;
 
-    /** @var \DCarbone\PHPConsulAPI\Consul */
-    private $consul;
-
     /**
      * ConsulConfig constructor.
      * @param array $config
+     * @param \GuzzleHttp\ClientInterface|null $client
      * @param \DCarbone\PHPConsulAPI\Consul|null $consul
      */
-    public function __construct(array $config, ?Consul $consul = null) {
+    public function __construct(array $config, ?ClientInterface $client = null, ?Consul $consul = null) {
         $this->processConfig($config);
         $this->consul = $consul;
+        $this->client = $client;
         $this->validate();
     }
 
@@ -52,11 +53,8 @@ class ConsulConfig extends Config {
      * @return string
      */
     public function getHost(): string {
-        static $fetched = false;
-        if (!$fetched && '' === $this->host) {
-            // should be good enough when used in conjunction with validate on construct
+        if ('' === $this->host) {
             $this->parseService();
-            $fetched = true;
         }
         return $this->host;
     }
@@ -67,11 +65,8 @@ class ConsulConfig extends Config {
      * @return int
      */
     public function getPort(): int {
-        static $fetched = false;
-        if (!$fetched && 0 === $this->port) {
-            // should be good enough when used in conjunction with validate on construct
+        if (0 === $this->port) {
             $this->parseService();
-            $fetched = true;
         }
         return $this->port;
     }
@@ -113,15 +108,15 @@ class ConsulConfig extends Config {
     }
 
     /**
-     * Returns api app key, preferring configured and will otherwise attempt to fetch appkeykey from Consul
+     * Returns api app key, preferring configured and will otherwise attempt to fetch appcodekey from Consul
      *
      * @return string
      */
-    public function getAppKey(): string {
-        if ('' === $this->appKey) {
-            $this->appKey = $this->getKeyValue($this->getAppKeyKey());
+    public function getAppCode(): string {
+        if ('' === $this->appCode) {
+            $this->appCode = $this->getKeyValue($this->getAppCodeKey());
         }
-        return $this->appKey;
+        return $this->appCode;
     }
 
     /**
@@ -176,8 +171,8 @@ class ConsulConfig extends Config {
     /**
      * @return string
      */
-    public function getAppKeyKey(): string {
-        return $this->appKeyKey;
+    public function getAppCodeKey(): string {
+        return $this->appCodeKey;
     }
 
     /**
@@ -274,11 +269,11 @@ class ConsulConfig extends Config {
         $this->usernameKey = trim((string)$config['usernamekey'] ?? '');
         $this->passwordKey = trim((string)$config['passwordkey'] ?? '');
         $this->appIDKey = trim((string)$config['appidkey'] ?? '');
-        $this->appKeyKey = trim((string)$config['appkeykey'] ?? '');
+        $this->appCodeKey = trim((string)$config['appcodekey'] ?? '');
     }
 
     protected function validate(): void {
-        if ('' === $this->host && 0 === $this->port && '' === $this->serviceName) {
+        if ('' === $this->serviceName && '' === $this->host && 0 === $this->port) {
             throw new \RuntimeException('servicename must be defined when host and port are not');
         }
         if ('' !== $this->serviceName && ('' !== $this->host || 0 !== $this->port)) {
@@ -291,14 +286,26 @@ class ConsulConfig extends Config {
         if ('' === $this->username && '' === $this->usernameKey) {
             throw new \RuntimeException('usernamekey must be defined when username is not');
         }
+        if ('' !== $this->username && '' !== $this->usernameKey) {
+            throw new \DomainException('usernamekey will not be used when username is defined');
+        }
         if ('' === $this->password && '' === $this->passwordKey) {
             throw new \RuntimeException('passwordkey must be defined when password is not');
+        }
+        if ('' !== $this->password && '' !== $this->passwordKey) {
+            throw new \DomainException('passwordkey will not be used when password is defined');
         }
         if ('' === $this->appID && '' === $this->appIDKey) {
             throw new \RuntimeException('appidkey must be defined when appid is not');
         }
-        if ('' === $this->appKey && '' === $this->appKeyKey) {
-            throw new \RuntimeException('appkeykey must be defined when appkey is not');
+        if ('' !== $this->appID && '' !== $this->appIDKey) {
+            throw new \DomainException('appidkey will not be used when appid is defined');
+        }
+        if ('' === $this->appCode && '' === $this->appCodeKey) {
+            throw new \RuntimeException('appcodekey must be defined when appcode is not');
+        }
+        if ('' !== $this->appCode && '' !== $this->appCodeKey) {
+            throw new \DomainException('appcodekey will not be used when appcode is defined');
         }
     }
 }
