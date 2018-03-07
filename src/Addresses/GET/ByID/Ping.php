@@ -1,7 +1,7 @@
-<?php namespace ENA\PHPIPAMAPI\Request\Addresses\GET\ByID;
+<?php namespace ENA\PHPIPAMAPI\Addresses\GET\ByID;
 
+use ENA\PHPIPAMAPI\Addresses\GET\ByID;
 use ENA\PHPIPAMAPI\Client;
-use ENA\PHPIPAMAPI\Request\Addresses\GET\ByID;
 
 /**
  * Class Ping
@@ -11,13 +11,13 @@ class Ping {
     /** @var \ENA\PHPIPAMAPI\Client */
     private $client;
 
-    /** @var \ENA\PHPIPAMAPI\Request\Addresses\GET\ByID */
+    /** @var \ENA\PHPIPAMAPI\Addresses\GET\ByID */
     private $byID;
 
     /**
      * Ping constructor.
      * @param \ENA\PHPIPAMAPI\Client $client
-     * @param \ENA\PHPIPAMAPI\Request\Addresses\GET\ByID $byID
+     * @param \ENA\PHPIPAMAPI\Addresses\GET\ByID $byID
      */
     public function __construct(Client $client, ByID $byID) {
         $this->client = $client;

@@ -1,10 +1,9 @@
-<?php namespace ENA\PHPIPAMAPI\Request;
+<?php namespace ENA\PHPIPAMAPI;
 
-use ENA\PHPIPAMAPI\Client;
-use ENA\PHPIPAMAPI\Request\User\POST;
+use ENA\PHPIPAMAPI\User\POST;
 
 class User {
-    const ROOT_PATH = '/user';
+    const ROOT_PATH = 'user/';
 
     /** @var \ENA\PHPIPAMAPI\Client */
     private $client;
@@ -18,7 +17,7 @@ class User {
     }
 
     /**
-     * @return \ENA\PHPIPAMAPI\Request\User\POST
+     * @return \ENA\PHPIPAMAPI\User\POST
      */
     public function POST(): POST {
         return new POST($this->client, $this);

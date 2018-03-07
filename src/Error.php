@@ -1,20 +1,17 @@
 <?php namespace ENA\PHPIPAMAPI;
 
-use ENA\PHPIPAMAPI\Error\ClientError;
-use ENA\PHPIPAMAPI\Error\ServerError;
 use ENA\PHPIPAMAPI\Error\TransportError;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Interface Error
  * @package ENA\PHPIPAMAPI\Response
  */
-abstract class Error {
+abstract class Error implements \JsonSerializable {
 
     /** @var int */
-    private $code;
+    protected $code;
     /** @var string */
-    private $reason;
+    protected $reason;
 
     /**
      * Error constructor.
@@ -31,7 +28,7 @@ abstract class Error {
      *
      * @return int
      */
-    public function code(): int {
+    public function getCode(): int {
         return $this->code;
     }
 
@@ -40,7 +37,7 @@ abstract class Error {
      *
      * @return string
      */
-    public function reason(): string {
+    public function getReason(): string {
         return $this->reason;
     }
 
@@ -49,15 +46,22 @@ abstract class Error {
      *
      * @return bool
      */
-    abstract public function transportError(): bool;
+    abstract public function isTransportError(): bool;
+
+    /**
+     * Returns true if an error was returned by the service
+     *
+     * @return bool
+     */
+    abstract public function isApiError(): bool;
 
     /**
      * Returns true if the response code was in the 4xx block
      *
      * @return bool
      */
-    public function clientError(): bool {
-        return 400 <= $this->code && $this->code < 500;
+    public function isClientError(): bool {
+        return 400 >= $this->code && $this->code < 500;
     }
 
     /**
@@ -65,8 +69,8 @@ abstract class Error {
      *
      * @return bool
      */
-    public function serverError(): bool {
-        return 500 <= $this->code && $this->code < 600;
+    public function isServerError(): bool {
+        return 500 >= $this->code && $this->code < 600;
     }
 
     /**
@@ -78,18 +82,19 @@ abstract class Error {
     }
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @return \ENA\PHPIPAMAPI\Error|null
+     * @return array
      */
-    public static function fromResponse(ResponseInterface $response): ?Error {
-        $code = $response->getStatusCode();
-        if (400 <= $code && $code < 500) {
-            return new ClientError($code, $response->getBody()->getContents());
-        } else if (500 <= $code && $code < 600) {
-            return new ServerError($code, $response->getBody()->getContents());
-        } else {
-            // TODO: is this ok?
-            return new TransportError($response->getStatusCode(), $response->getBody()->getContents());
-        }
+    public function jsonSerialize() {
+        return [
+            'code'   => $this->getCode(),
+            'reason' => $this->getReason(),
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString() {
+        return "{$this->code}: {$this->reason}";
     }
 }

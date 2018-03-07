@@ -14,7 +14,8 @@
     "php": ">=7.1",
     "guzzlehttp/guzzle": "^6.3",
     "dcarbone/php-consul-api": "@stable",
-    "psr/log": "@stable"
+    "psr/log": "@stable",
+    "dcarbone/gotime": "@stable"
   },
   "require-dev": {
     "myena/default-logger": "@stable"

@@ -10,7 +10,14 @@ class TransportError extends Error {
     /**
      * @return bool
      */
-    public function transportError(): bool {
+    public function isTransportError(): bool {
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isApiError(): bool {
+        return false;
     }
 }

@@ -1,14 +1,13 @@
 <?php namespace ENA\PHPIPAMAPI;
 
 use ENA\PHPIPAMAPI\Config\ConfigProvider;
-use ENA\PHPIPAMAPI\Request\Addresses;
-use ENA\PHPIPAMAPI\Request\User;
+use ENA\PHPIPAMAPI\Error\ApiError;
+use ENA\PHPIPAMAPI\Error\TransportError;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request as PSR7Request;
 use GuzzleHttp\Psr7\Uri as PSR7Uri;
 use GuzzleHttp\RequestOptions;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -28,7 +27,7 @@ class Client implements LoggerAwareInterface {
     private $serviceAddress;
 
     /** @var string */
-    private $sid;
+    private $token;
 
     /** @var bool */
     private $silent;
@@ -55,14 +54,14 @@ class Client implements LoggerAwareInterface {
     }
 
     /**
-     * @return \ENA\PHPIPAMAPI\Request\Addresses
+     * @return \ENA\PHPIPAMAPI\Addresses
      */
     public function Addresses(): Addresses {
         return new Addresses($this);
     }
 
     /**
-     * @return \ENA\PHPIPAMAPI\Request\User
+     * @return \ENA\PHPIPAMAPI\User
      */
     public function User(): User {
         return new User($this);
@@ -77,38 +76,38 @@ class Client implements LoggerAwareInterface {
 
     /**
      * @param \ENA\PHPIPAMAPI\Request $request
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array(
+     * @type \ENA\PHPIPAMAPI\Response   Response, if we received one
+     * @type \ENA\PHPIPAMAPI\Error      Error, if we saw one
+     * )
      */
-    public function do(Request $request): ResponseInterface {
+    public function do(Request $request): array {
         $req = $this->compilePSR7($request);
         if (!$this->silent) {
             $this->logger->debug("Executing {$req->getUri()}");
         }
-        $resp = $this->config->getClient()->send($req, self::$requestOptions);
+        try {
+            $resp = $this->config->getClient()->send($req, self::$requestOptions);
+        } catch (GuzzleException $e) {
+            if (!$this->silent) {
+                $this->logger->error("Query returned {$e->getCode()}: {$e->getMessage()}");
+            }
+            // TODO: do something different here?
+            return [null, new TransportError($e->getCode(), $e->getMessage())];
+        } catch (\Exception $e) {
+            if (!$this->silent) {
+                $this->logger->error("Query returned {$e->getCode()}: {$e->getMessage()}");
+            }
+            return [null, new TransportError($e->getCode(), $e->getMessage())];
+        }
         if (!$this->silent) {
             $this->logger->debug("Query returned {$resp->getStatusCode()}: {$resp->getReasonPhrase()}");
         }
-        return $resp;
-    }
-
-    /**
-     * Execute request where all response codes other than the one provided are considered erroneous.
-     *
-     * @param int $code
-     * @param \ENA\PHPIPAMAPI\Request $request
-     * @return array
-     */
-    public function require(int $code, Request $request): array {
-        try {
-            $resp = $this->do($request);
-        } catch (GuzzleException $e) {
-            return [null, Error::fromException($e)];
+        $code = $resp->getStatusCode();
+        if (200 < $code || $code >= 300) {
+            return [$resp, new ApiError($code, $resp->getBody()->getContents())];
         }
-        if ($resp->getStatusCode() == $code) {
-            return [$resp, null];
-        }
-        return [$resp, Error::fromResponse($resp)];
+        return Response::fromPSR7Response($resp);
     }
 
     /**
@@ -117,7 +116,7 @@ class Client implements LoggerAwareInterface {
     private function serviceAddress(): string {
         if (!isset($this->serviceAddress)) {
             $this->serviceAddress = sprintf(
-                '%s://%s%s/api/%s',
+                '%s://%s%s/api/%s/',
                 $this->config->useHTTPS() ? 'https' : 'http',
                 $this->config->getHost(),
                 (0 === ($port = $this->config->getPort()) ? '' : ":{$port}"),
@@ -127,10 +126,24 @@ class Client implements LoggerAwareInterface {
         return $this->serviceAddress;
     }
 
-    private function sessionID(): string {
-        if (!isset($this->sid)) {
-            $resp = $this->User()->POST()->execute();
+    /**
+     * @return string
+     */
+    private function token(): string {
+        if (!isset($this->token)) {
+            /** @var \ENA\PHPIPAMAPI\User\POSTResponse $resp */
+            /** @var \ENA\PHPIPAMAPI\Error $err */
+            [$resp, $err] = $this->User()->POST()->execute();
+            if (null !== $err) {
+                throw new \RuntimeException(sprintf(
+                    'Unable to authenticate user %s: %s',
+                    $this->config->getUsername(),
+                    $err
+                ));
+            }
+            $this->token = $resp->getData()->getToken();
         }
+        return $this->token;
     }
 
     /**
@@ -146,6 +159,10 @@ class Client implements LoggerAwareInterface {
             }
             $uri->withQuery(implode('&', $params));
         }
-        return new PSR7Request($r->method(), $uri, $r->headers(), $r->body());
+        return new PSR7Request(
+            $r->method(),
+            $uri,
+            $r->headers() + ($r->authenticated() ? ['phpipam-token' => $this->token()] : []),
+            $r->body());
     }
 }

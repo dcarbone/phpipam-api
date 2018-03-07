@@ -1,8 +1,7 @@
-<?php namespace ENA\PHPIPAMAPI\Request\Addresses\GET;
+<?php namespace ENA\PHPIPAMAPI\Addresses\GET;
 
 use ENA\PHPIPAMAPI\Client;
-use ENA\PHPIPAMAPI\Request;
-use ENA\PHPIPAMAPI\Request\Addresses\GET;
+use ENA\PHPIPAMAPI\Addresses\GET;
 
 /**
  * Class ByID
@@ -12,7 +11,7 @@ class ByID {
     /** @var \ENA\PHPIPAMAPI\Client */
     private $client;
 
-    /** @var \ENA\PHPIPAMAPI\Request\Addresses\GET */
+    /** @var \ENA\PHPIPAMAPI\Addresses\GET */
     private $get;
 
     /** @var string */
@@ -21,7 +20,7 @@ class ByID {
     /**
      * ByID constructor.
      * @param \ENA\PHPIPAMAPI\Client $client
-     * @param \ENA\PHPIPAMAPI\Request\Addresses\GET $GET
+     * @param \ENA\PHPIPAMAPI\Addresses\GET $GET
      * @param string $id
      */
     public function __construct(Client $client, GET $GET, string $id) {
@@ -38,7 +37,6 @@ class ByID {
     }
 
     public function execute() {
-        $r = new Request('get', Request\Addresses::ROOT_PATH."/{$this->id}/");
 
     }
 }

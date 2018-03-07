@@ -1,15 +1,14 @@
-<?php namespace ENA\PHPIPAMAPI\Request;
+<?php namespace ENA\PHPIPAMAPI;
 
-use ENA\PHPIPAMAPI\Client;
-use ENA\PHPIPAMAPI\Request\Addresses\GET;
-use ENA\PHPIPAMAPI\Request\Addresses\POST;
+use ENA\PHPIPAMAPI\Addresses\GET;
+use ENA\PHPIPAMAPI\Addresses\POST;
 
 /**
  * Class Addresses
  * @package ENA\PHPIPAMAPI\Request
  */
 class Addresses {
-    const ROOT_PATH = '/addresses';
+    const ROOT_PATH = 'addresses/';
 
     /** @var \ENA\PHPIPAMAPI\Client */
     private $client;
@@ -23,14 +22,14 @@ class Addresses {
     }
 
     /**
-     * @return \ENA\PHPIPAMAPI\Request\Addresses\GET
+     * @return \ENA\PHPIPAMAPI\Addresses\GET
      */
     public function GET(): GET {
         return new GET($this->client, $this);
     }
 
     /**
-     * @return \ENA\PHPIPAMAPI\Request\Addresses\POST
+     * @return \ENA\PHPIPAMAPI\Addresses\POST
      */
     public function POST(): POST {
         return new POST($this->client, $this);
