@@ -4,24 +4,16 @@ use DCarbone\Go\Time;
 use MyENA\PHPIPAMAPI\AbstractModel;
 
 /**
- * Class POSTResponseData
+ * Class PATCHResponseData
  * @package MyENA\PHPIPAMAPI\User
  */
-class POSTResponseData extends AbstractModel {
-    /** @var string */
-    protected $token = '';
+class PATCHResponseData extends AbstractModel {
+
     /** @var string */
     protected $expires = '';
 
     /** @var \DCarbone\Go\Time\Time */
     private $time;
-
-    /**
-     * @return string
-     */
-    public function getToken(): string {
-        return $this->token;
-    }
 
     /**
      * @return string

@@ -1,22 +1,21 @@
 <?php namespace MyENA\PHPIPAMAPI\User;
 
 use MyENA\PHPIPAMAPI\Client;
-use MyENA\PHPIPAMAPI\Error\ApiError;
 use MyENA\PHPIPAMAPI\Request;
 use MyENA\PHPIPAMAPI\User;
 
 /**
- * Class DELETE
+ * Class PATCH
  * @package MyENA\PHPIPAMAPI\User
  */
-class DELETE {
+class PATCH {
     /** @var \MyENA\PHPIPAMAPI\Client */
     private $client;
     /** @var \MyENA\PHPIPAMAPI\User */
     private $user;
 
     /**
-     * DELETE constructor.
+     * PATCH constructor.
      * @param \MyENA\PHPIPAMAPI\Client $client
      * @param \MyENA\PHPIPAMAPI\User $user
      */
@@ -26,26 +25,15 @@ class DELETE {
     }
 
     /**
-     * Perform user logout
-     *
      * @return array(
-     * @type \MyENA\PHPIPAMAPI\User\DELETEResponse|null
+     * @type \MyENA\PHPIPAMAPI\User\PATCHResponse|null
      * @type \MyENA\PHPIPAMAPI\Error|null
      * )
      */
     public function execute(): array {
-        // manually check for token as we do not want to accidentally initiate a login cycle if we're just going to log
-        // out anyway...
-        if (null === ($cs = $this->client->getClientSession())) {
-            return [null, new ApiError(400, 'Client session is not open')];
-        }
         $r = new Request(
-            'delete',
-            User::ROOT_PATH,
-            [PHPIPAM_TOKEN_HEADER => $cs->getToken()],
-            [],
-            null,
-            false
+            'patch',
+            User::ROOT_PATH
         );
         /** @var \Psr\Http\Message\ResponseInterface $resp */
         /** @var \MyENA\PHPIPAMAPI\Error $err */
@@ -53,7 +41,6 @@ class DELETE {
         if (null !== $err) {
             return [null, $err];
         }
-
-        return DELETEResponse::fromPSR7Response($resp);
+        return PATCHResponse::fromPSR7Response($resp);
     }
 }

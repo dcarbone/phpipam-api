@@ -1,6 +1,7 @@
 <?php namespace MyENA\PHPIPAMAPI;
 
 use MyENA\PHPIPAMAPI\User\DELETE;
+use MyENA\PHPIPAMAPI\User\PATCH;
 use MyENA\PHPIPAMAPI\User\POST;
 
 /**
@@ -26,6 +27,13 @@ class User {
      */
     public function POST(): POST {
         return new POST($this->client, $this);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\User\PATCH
+     */
+    public function PATCH(): PATCH {
+        return new PATCH($this->client, $this);
     }
 
     /**

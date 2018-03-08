@@ -42,7 +42,10 @@ abstract class AbstractResponse {
      * )
      */
     public static function fromPSR7Response(ResponseInterface $response): array {
+        // TODO: Don't like calling rewind here...
+        $response->getBody()->rewind();
         $contents = $response->getBody()->getContents();
+        $response->getBody()->close();
         $decoded = json_decode($contents, true);
         if (JSON_ERROR_NONE === json_last_error()) {
             if (is_array($decoded)) { // TODO: better test for root object
@@ -78,7 +81,7 @@ abstract class AbstractResponse {
                 null,
                 new ApiError(-1, sprintf(
                     'Response returned invalid JSON: %s',
-                    $contents
+                    json_last_error_msg()
                 )),
             ];
         }
