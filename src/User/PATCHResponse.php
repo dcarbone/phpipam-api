@@ -1,6 +1,7 @@
 <?php namespace MyENA\PHPIPAMAPI\User;
 
 use MyENA\PHPIPAMAPI\AbstractResponse;
+use MyENA\PHPIPAMAPI\Models\UserSession;
 
 /**
  * Class PATCHResponse
@@ -11,13 +12,13 @@ class PATCHResponse extends AbstractResponse {
      * @param mixed $data
      */
     protected function parseData($data): void {
-        $this->data = new PATCHResponseData($data);
+        $this->data = UserSession::fromArray($data);
     }
 
     /**
-     * @return \MyENA\PHPIPAMAPI\User\PATCHResponseData
+     * @return \MyENA\PHPIPAMAPI\Models\UserSession
      */
-    public function getData(): PATCHResponseData {
+    public function getData(): UserSession {
         return $this->data;
     }
 }

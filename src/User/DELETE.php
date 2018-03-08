@@ -36,12 +36,12 @@ class DELETE {
     public function execute(): array {
         // manually check for token as we do not want to accidentally initiate a login cycle if we're just going to log
         // out anyway...
-        if (null === ($cs = $this->client->getClientSession())) {
+        if (null === ($cs = $this->client->getClientUserSession())) {
             return [null, new ApiError(400, 'Client session is not open')];
         }
         $r = new Request(
             'delete',
-            User::ROOT_PATH,
+            User::PATH,
             [PHPIPAM_TOKEN_HEADER => $cs->getToken()],
             [],
             null,

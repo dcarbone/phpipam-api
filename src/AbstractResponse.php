@@ -97,14 +97,14 @@ abstract class AbstractResponse {
     /**
      * @return bool
      */
-    public function success(): bool {
+    public function wasSuccess(): bool {
         return $this->success;
     }
 
     /**
      * @return \DCarbone\Go\Time\Duration
      */
-    public function time(): Duration {
+    public function getTime(): Duration {
         return $this->time;
     }
 

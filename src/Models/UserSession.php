@@ -1,13 +1,15 @@
-<?php namespace MyENA\PHPIPAMAPI;
+<?php namespace MyENA\PHPIPAMAPI\Models;
 
 use DCarbone\Go\Time;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class ClientSession
- * @package MyENA\PHPIPAMAPI
+ * TODO: This class is more complex than I would like it to be due to wanting to catch token changes...
+ *
+ * Class UserSession
+ * @package MyENA\PHPIPAMAPI\Models
  */
-class ClientSession {
+class UserSession {
     /** @var string */
     private $token;
     /** @var string */
@@ -28,27 +30,71 @@ class ClientSession {
 
     /**
      * @param \Psr\Http\Message\ResponseInterface $response
-     * @return \MyENA\PHPIPAMAPI\ClientSession
+     * @return \MyENA\PHPIPAMAPI\Models\UserSession
      */
-    public static function fromPSR7Response(ResponseInterface $response): ClientSession {
-        $decoded = json_decode($response->getBody()->getContents());
+    public static function fromPSR7Response(ResponseInterface $response): UserSession {
+        $contents = $response->getBody()->getContents();
+        $decoded = json_decode($contents);
         if (JSON_ERROR_NONE === json_last_error()) {
-            if (is_object($decoded) &&
-                isset($decoded->data) &&
-                is_object($decoded->data) &&
-                isset($decoded->data->token) &&
-                isset($decoded->data->expires)) {
-                return new static($decoded->data->token, $decoded->data->expires);
+            if ('object' === ($type = gettype($decoded))) {
+                if (isset($decoded->data) && is_object($decoded->data)) {
+                    return self::fromStdClass($decoded->data);
+                } else {
+                    throw new \DomainException(sprintf(
+                        'Expected format of {"data": {"token": "value", "expires": "value"}} not found in %s',
+                        $contents
+                    ));
+                }
+
+            } else if ('array' === $type) {
+                if (isset($decoded['data']) && is_array($decoded['data'])) {
+                    return self::fromArray($decoded['data']);
+                } else {
+                    throw new \DomainException(sprintf(
+                        'Expected format of ["data" => ["token => "value", "expires" => "value"]] not found in %s',
+                        $contents
+                    ));
+                }
             } else {
                 throw new \DomainException(sprintf(
-                    'Expected format of ["token => "value", "expires" => "value"] not found in %s',
-                    $decoded
+                    'Expected either associative array or object, saw %s',
+                    $contents
                 ));
             }
         } else {
             throw new \DomainException(sprintf(
                 'Unable to construct ClientSession from response: %s',
                 json_last_error_msg()
+            ));
+        }
+    }
+
+    /**
+     * @param array $data
+     * @return \MyENA\PHPIPAMAPI\Models\UserSession
+     */
+    public static function fromArray(array $data): UserSession {
+        if (isset($data['token']) && isset($data['expires'])) {
+            return new static($data['token'], $data['expires']);
+        } else {
+            throw new \DomainException(sprintf(
+                'Expected format of ["token => "value", "expires" => "value"] not found in %s',
+                json_encode($data)
+            ));
+        }
+    }
+
+    /**
+     * @param \stdClass $data
+     * @return \MyENA\PHPIPAMAPI\Models\UserSession
+     */
+    public static function fromStdClass(\stdClass $data): UserSession {
+        if (isset($data->token) && isset($data->expires)) {
+            return new static($data->token, $data->expires);
+        } else {
+            throw new \DomainException(sprintf(
+                'Expected format of {"token": "value", "expires": "value"} not found in %s',
+                json_encode($data)
             ));
         }
     }
@@ -76,11 +122,11 @@ class ClientSession {
                 $this->time = Time::New();
             } else {
                 try {
-                    $this->time = Time\Time::createFromFormat(PHPIPAM_TOKEN_EXPIRES_FORMAT, $this->expires);
+                    $this->time = Time\Time::createFromFormat(PHPIPAM_DATETIME_FORMAT, $this->expires);
                 } catch (\Throwable $e) {
                     throw new \DomainException(sprintf(
                         'Expires not in expected format of "%s": %s',
-                        PHPIPAM_TOKEN_EXPIRES_FORMAT,
+                        PHPIPAM_DATETIME_FORMAT,
                         $this->expires
                     ));
                 }

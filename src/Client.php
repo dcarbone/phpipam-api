@@ -7,6 +7,7 @@ use GuzzleHttp\Psr7\Uri as PSR7Uri;
 use GuzzleHttp\RequestOptions;
 use MyENA\PHPIPAMAPI\Error\ApiError;
 use MyENA\PHPIPAMAPI\Error\TransportError;
+use MyENA\PHPIPAMAPI\Models\UserSession;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -27,8 +28,8 @@ class Client implements LoggerAwareInterface {
     /** @var string */
     private $serviceAddress;
 
-    /** @var \MyENA\PHPIPAMAPI\ClientSession */
-    private $clientSession;
+    /** @var \MyENA\PHPIPAMAPI\Models\UserSession */
+    private $clientUserSession;
 
     /** @var bool */
     private $silent;
@@ -52,6 +53,13 @@ class Client implements LoggerAwareInterface {
         $this->logger = $logger;
         $this->config = $config;
         $this->silent = $this->config->silent();
+
+        $t = $this;
+        register_shutdown_function(function() use ($t) {
+            if (isset($t->clientUserSession)) {
+                $t->User()->DELETE()->execute();
+            }
+        });
     }
 
     /**
@@ -78,10 +86,10 @@ class Client implements LoggerAwareInterface {
     /**
      * Returns the current token of this client
      *
-     * @return \MyENA\PHPIPAMAPI\ClientSession|null
+     * @return \MyENA\PHPIPAMAPI\Models\UserSession|null
      */
-    public function getClientSession(): ?ClientSession {
-        return $this->clientSession ?? null;
+    public function getClientUserSession(): ?UserSession {
+        return $this->clientUserSession ?? null;
     }
 
     /**
@@ -94,7 +102,7 @@ class Client implements LoggerAwareInterface {
     public function do(Request $request): array {
         $psrRequest = $this->compilePSR7($request);
         if (!$this->silent) {
-            $this->logger->debug("Executing {$psrRequest->getUri()}");
+            $this->logger->debug("Executing: {$psrRequest->getMethod()} {$psrRequest->getUri()}");
         }
         try {
             $resp = $this->config->getClient()->send($psrRequest, self::$requestOptions);
@@ -118,7 +126,7 @@ class Client implements LoggerAwareInterface {
             return [$resp, new ApiError($code, $resp->getBody()->getContents())];
         }
         // if this request modifies user session information, try to prevent weirdness.
-        if (User::ROOT_PATH === $request->uri()) {
+        if (User::PATH === $request->uri()) {
             $this->updateSession($psrRequest, $resp);
         }
         return [$resp, null];
@@ -141,10 +149,12 @@ class Client implements LoggerAwareInterface {
     }
 
     /**
-     * @return \MyENA\PHPIPAMAPI\ClientSession
+     * Will attempt return the current user session for this client, attempting to procure one first if not set
+     *
+     * @return \MyENA\PHPIPAMAPI\Models\UserSession
      */
-    private function clientSession(): ?ClientSession {
-        if (!isset($this->clientSession)) {
+    private function clientUserSession(): ?UserSession {
+        if (!isset($this->clientUserSession)) {
             /** @var \MyENA\PHPIPAMAPI\User\POSTResponse $resp */
             /** @var \MyENA\PHPIPAMAPI\Error $err */
             [$resp, $err] = $this->User()->POST()->execute();
@@ -155,12 +165,12 @@ class Client implements LoggerAwareInterface {
                     $err
                 ));
             }
-            $this->clientSession = new ClientSession($resp->getData()->getToken(), $resp->getData()->getExpires());
+            $this->clientUserSession = new UserSession($resp->getData()->getToken(), $resp->getData()->getExpires());
             if (!$this->silent) {
                 $this->logger->info('Client token has been created');
             }
         }
-        return $this->clientSession ?? null;
+        return $this->clientUserSession ?? null;
     }
 
     /**
@@ -172,17 +182,17 @@ class Client implements LoggerAwareInterface {
     private function updateSession(RequestInterface $request, ResponseInterface $response): void {
         $method = $request->getMethod();
         if ('DELETE' === $method) {
-            if (isset($this->clientSession) &&
-                $request->getHeaderLine(PHPIPAM_TOKEN_HEADER) === $this->clientSession->getToken()) {
+            if (isset($this->clientUserSession) &&
+                $request->getHeaderLine(PHPIPAM_TOKEN_HEADER) === $this->clientUserSession->getToken()) {
                 if (!$this->silent) {
                     $this->logger->info('Client token has been invalidated');
                 }
-                $this->clientSession = null;
+                $this->clientUserSession = null;
             }
         } else if ('PATCH' === $method) {
-            if (isset($this->clientSession) &&
-                $request->getHeaderLine(PHPIPAM_TOKEN_HEADER) === $this->clientSession->getToken()) {
-                $this->clientSession->refreshFromPSR7Response($response);
+            if (isset($this->clientUserSession) &&
+                $request->getHeaderLine(PHPIPAM_TOKEN_HEADER) === $this->clientUserSession->getToken()) {
+                $this->clientUserSession->refreshFromPSR7Response($response);
                 if (!$this->silent) {
                     $this->logger->info('Client token has been refreshed');
                 }
@@ -192,11 +202,11 @@ class Client implements LoggerAwareInterface {
                     'Basic %s',
                     base64_encode("{$this->getConfig()->getUsername()}:{$this->getConfig()->getPassword()}")
                 )) {
-                if (isset($this->clientSession) && $this->clientSession->getExpiresTime()->After(Time::Now())) {
+                if (isset($this->clientUserSession) && $this->clientUserSession->getExpiresTime()->After(Time::Now())) {
                     if (!$this->silent) {
                         $this->logger->warning(sprintf(
                             'Login call made using configured credentials despite existing session not expiring for another "%s", will attempt to cleanup existing session...',
-                            $this->clientSession->getExpiresTime()->UnixNanoDuration()
+                            $this->clientUserSession->getExpiresTime()->UnixNanoDuration()
                         ));
                     }
                     [$_, $err] = $this->User()->DELETE()->execute();
@@ -209,7 +219,7 @@ class Client implements LoggerAwareInterface {
                 if (!$this->silent) {
                     $this->logger->info('Client token created');
                 }
-                $this->clientSession = ClientSession::fromPSR7Response($response);
+                $this->clientUserSession = UserSession::fromPSR7Response($response);
             }
         }
     }
@@ -230,7 +240,8 @@ class Client implements LoggerAwareInterface {
         return new PSR7Request(
             $r->method(),
             $uri,
-            $r->headers() + ($r->authenticated() ? [PHPIPAM_TOKEN_HEADER => $this->clientSession()->getToken()] : []),
+            $r->headers() +
+            ($r->authenticated() ? [PHPIPAM_TOKEN_HEADER => $this->clientUserSession()->getToken()] : []),
             $r->body());
     }
 }

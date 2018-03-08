@@ -35,7 +35,7 @@ class POST {
     public function execute(): array {
         $r = new Request(
             'post',
-            User::ROOT_PATH,
+            User::PATH,
             [
                 'Authorization' => sprintf(
                     'Basic %s',

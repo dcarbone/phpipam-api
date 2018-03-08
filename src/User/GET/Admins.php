@@ -1,39 +1,42 @@
-<?php namespace MyENA\PHPIPAMAPI\User;
+<?php namespace MyENA\PHPIPAMAPI\User\GET;
 
 use MyENA\PHPIPAMAPI\Client;
 use MyENA\PHPIPAMAPI\Request;
 use MyENA\PHPIPAMAPI\User;
+use MyENA\PHPIPAMAPI\User\GET;
 
 /**
- * Class PATCH
- * @package MyENA\PHPIPAMAPI\User
+ * Class Admins
+ * @package MyENA\PHPIPAMAPI\User\GET
  */
-class PATCH {
+class Admins {
+    const PATH = 'admins/';
+
     /** @var \MyENA\PHPIPAMAPI\Client */
     private $client;
-    /** @var \MyENA\PHPIPAMAPI\User */
-    private $user;
+    /** @var \MyENA\PHPIPAMAPI\User\GET */
+    private $get;
 
     /**
-     * PATCH constructor.
+     * Admins constructor.
      * @param \MyENA\PHPIPAMAPI\Client $client
-     * @param \MyENA\PHPIPAMAPI\User $user
+     * @param \MyENA\PHPIPAMAPI\User\GET $get
      */
-    public function __construct(Client $client, User $user) {
+    public function __construct(Client $client, GET $get) {
         $this->client = $client;
-        $this->user = $user;
+        $this->get = $get;
     }
 
     /**
      * @return array(
-     * @type \MyENA\PHPIPAMAPI\User\PATCHResponse|null
+     * @type \MyENA\PHPIPAMAPI\User\GET\AdminsResponse|null
      * @type \MyENA\PHPIPAMAPI\Error|null
      * )
      */
-    public function execute(): array {
+    public function execute() {
         $r = new Request(
-            'patch',
-            User::PATH
+            'get',
+            User::PATH.self::PATH
         );
         /** @var \Psr\Http\Message\ResponseInterface $resp */
         /** @var \MyENA\PHPIPAMAPI\Error $err */
@@ -41,6 +44,7 @@ class PATCH {
         if (null !== $err) {
             return [null, $err];
         }
-        return PATCHResponse::fromPSR7Response($resp);
+
+        return AdminsResponse::fromPSR7Response($resp);
     }
 }

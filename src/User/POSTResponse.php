@@ -1,6 +1,7 @@
 <?php namespace MyENA\PHPIPAMAPI\User;
 
 use MyENA\PHPIPAMAPI\AbstractResponse;
+use MyENA\PHPIPAMAPI\Models\UserSession;
 
 /**
  * Class POSTResponse
@@ -11,19 +12,13 @@ class POSTResponse extends AbstractResponse {
      * @param array $data
      */
     protected function parseData($data): void {
-        if (!is_array($data)) {
-            throw new \DomainException(sprintf(
-                'POST /users/ expected "data" property to be object, saw %s',
-                gettype($data)
-            ));
-        }
-        $this->data = new POSTResponseData($data);
+        $this->data = UserSession::fromArray($data);
     }
 
     /**
-     * @return \MyENA\PHPIPAMAPI\User\POSTResponseData
+     * @return \MyENA\PHPIPAMAPI\Models\UserSession
      */
-    public function getData(): ?POSTResponseData {
+    public function getData(): ?UserSession {
         return $this->data ?? null;
     }
 }

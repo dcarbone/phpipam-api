@@ -1,6 +1,7 @@
 <?php namespace MyENA\PHPIPAMAPI;
 
 use MyENA\PHPIPAMAPI\User\DELETE;
+use MyENA\PHPIPAMAPI\User\GET;
 use MyENA\PHPIPAMAPI\User\PATCH;
 use MyENA\PHPIPAMAPI\User\POST;
 
@@ -9,7 +10,7 @@ use MyENA\PHPIPAMAPI\User\POST;
  * @package MyENA\PHPIPAMAPI
  */
 class User {
-    const ROOT_PATH = 'user/';
+    const PATH = 'user/';
 
     /** @var \MyENA\PHPIPAMAPI\Client */
     private $client;
@@ -20,6 +21,13 @@ class User {
      */
     public function __construct(Client $client) {
         $this->client = $client;
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\User\GET
+     */
+    public function GET(): GET {
+        return new GET($this->client, $this);
     }
 
     /**
