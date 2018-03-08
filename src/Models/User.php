@@ -21,29 +21,31 @@ class User extends AbstractModel {
     /** @var null|string */
     protected $role = '';
     /** @var null|string */
-    protected $realName = '';
+    protected $real_name = '';
     /** @var null|string */
     protected $email = '';
-    /** @var null|bool */
-    protected $pdns = false;
-    /** @var null|bool */
-    protected $editVlan = false;
+    /** @var null|string */
+    protected $pdns = '';
+    /** @var null|string */
+    protected $editVlan = '';
+    /** @var null|string */
+    protected $editCircuits = '';
     /** @var null|string */
     protected $ptsn = '';
-    /** @var null|bool */
-    protected $domainUser = false;
+    /** @var null|string */
+    protected $domainUser = '';
     /** @var null|string */
     protected $widgets = '';
     /** @var null|string */
     protected $lang = '';
     /** @var null|string */
-    protected $favoriteSubnets = '';
-    /** @var null|bool */
-    protected $mailNotify = false;
-    /** @var null|bool */
-    protected $mailChangelog = false;
-    /** @var null|bool */
-    protected $passChange = false;
+    protected $favorite_subnets = '';
+    /** @var null|string */
+    protected $mailNotify = '';
+    /** @var null|string */
+    protected $mailChangelog = '';
+    /** @var null|'' */
+    protected $passChange = '';
     /** @var \DCarbone\Go\Time\Time|null */
     protected $editDate = null;
     /** @var \DCarbone\Go\Time\Time|null */
@@ -52,14 +54,14 @@ class User extends AbstractModel {
     protected $lastActivity = null;
     /** @var null|string */
     protected $compressOverride = '';
-    /** @var null|bool */
-    protected $hideFreeRange = false;
+    /** @var null|string */
+    protected $hideFreeRange = '';
     /** @var null|string */
     protected $menuType = '';
     /** @var null|string */
     protected $token = '';
     /** @var \DCarbone\Go\Time\Time|null */
-    protected $tokenValidUntil = null;
+    protected $token_valid_until = null;
 
     /**
      * User constructor.
@@ -67,34 +69,10 @@ class User extends AbstractModel {
      */
     public function __construct(array $data = []) {
         parent::__construct($data);
-        $this->pdns = $this->parseBool($this->pdns);
-        $this->editVlan = $this->parseBool($this->editVlan);
-        $this->domainUser = $this->parseBool($this->domainUser);
-        $this->mailNotify = $this->parseBool($this->mailNotify);
-        $this->mailChangelog = $this->parseBool($this->mailChangelog);
-        $this->passChange = $this->parseBool($this->passChange);
-        $this->hideFreeRange = $this->parseBool($this->hideFreeRange);
-
-        $this->editDate = $this->parseDate($this->editDate);
-        $this->lastLogin = $this->parseDate($this->lastLogin);
-        $this->lastActivity = $this->parseDate($this->lastActivity);
-        $this->tokenValidUntil = $this->parseDate($this->tokenValidUntil);
-    }
-
-    /**
-     * @return array
-     */
-    public function __debugInfo() {
-        return $this->jsonSerialize();
-    }
-
-    /**
-     * @return array
-     */
-    public function __sleep() {
-        $keys = array_keys($this->jsonSerialize());
-        unset($keys['password']);
-        return $keys;
+        $this->editDate = $this->unmarshalDate($this->editDate);
+        $this->lastLogin = $this->unmarshalDate($this->lastLogin);
+        $this->lastActivity = $this->unmarshalDate($this->lastActivity);
+        $this->token_valid_until = $this->unmarshalDate($this->token_valid_until);
     }
 
     /**
@@ -143,7 +121,7 @@ class User extends AbstractModel {
      * @return null|string
      */
     public function getRealName(): ?string {
-        return $this->realName;
+        return $this->real_name;
     }
 
     /**
@@ -154,17 +132,24 @@ class User extends AbstractModel {
     }
 
     /**
-     * @return bool|null
+     * @return null|string
      */
-    public function getPdns(): ?bool {
+    public function getPdns(): ?string {
         return $this->pdns;
     }
 
     /**
-     * @return bool|null
+     * @return null|string
      */
-    public function getEditVlan(): ?bool {
+    public function getEditVlan(): ?string {
         return $this->editVlan;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getEditCircuits(): ?string {
+        return $this->editCircuits;
     }
 
     /**
@@ -175,9 +160,9 @@ class User extends AbstractModel {
     }
 
     /**
-     * @return bool|null
+     * @return null|string
      */
-    public function getDomainUser(): ?bool {
+    public function getDomainUser(): ?string {
         return $this->domainUser;
     }
 
@@ -199,27 +184,27 @@ class User extends AbstractModel {
      * @return null|string
      */
     public function getFavoriteSubnets(): ?string {
-        return $this->favoriteSubnets;
+        return $this->favorite_subnets;
     }
 
     /**
-     * @return bool|null
+     * @return null|string
      */
-    public function getMailNotify(): ?bool {
+    public function getMailNotify(): ?string {
         return $this->mailNotify;
     }
 
     /**
-     * @return bool|null
+     * @return null|string
      */
-    public function getMailChangelog(): ?bool {
+    public function getMailChangelog(): ?string {
         return $this->mailChangelog;
     }
 
     /**
-     * @return bool|null
+     * @return null
      */
-    public function getPassChange(): ?bool {
+    public function getPassChange() {
         return $this->passChange;
     }
 
@@ -252,9 +237,9 @@ class User extends AbstractModel {
     }
 
     /**
-     * @return bool|null
+     * @return null|string
      */
-    public function getHideFreeRange(): ?bool {
+    public function getHideFreeRange(): ?string {
         return $this->hideFreeRange;
     }
 
@@ -276,15 +261,18 @@ class User extends AbstractModel {
      * @return \DCarbone\Go\Time\Time|null
      */
     public function getTokenValidUntil(): ?Time\Time {
-        return $this->tokenValidUntil;
+        return $this->token_valid_until;
     }
 
     /**
      * @return array
      */
     public function jsonSerialize() {
-        $a = parent::jsonSerialize();
-        $a['password'] = null;
+        $a = get_object_vars($this);
+        $a['editDate'] = $this->marshalDate($this->editDate);
+        $a['lastLogin'] = $this->marshalDate($this->lastLogin);
+        $a['lastActivity'] = $this->marshalDate($this->lastActivity);
+        $a['token_valid_until'] = $this->marshalDate($this->token_valid_until);
         return $a;
     }
 }

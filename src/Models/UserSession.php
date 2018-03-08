@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
  * Class UserSession
  * @package MyENA\PHPIPAMAPI\Models
  */
-class UserSession {
+class UserSession implements \JsonSerializable {
     /** @var string */
     private $token;
     /** @var string */
@@ -45,7 +45,6 @@ class UserSession {
                         $contents
                     ));
                 }
-
             } else if ('array' === $type) {
                 if (isset($decoded['data']) && is_array($decoded['data'])) {
                     return self::fromArray($decoded['data']);
@@ -74,8 +73,8 @@ class UserSession {
      * @return \MyENA\PHPIPAMAPI\Models\UserSession
      */
     public static function fromArray(array $data): UserSession {
-        if (isset($data['token']) && isset($data['expires'])) {
-            return new static($data['token'], $data['expires']);
+        if (isset($data['expires'])) {
+            return new static($data['token'] ?? '', $data['expires']);
         } else {
             throw new \DomainException(sprintf(
                 'Expected format of ["token => "value", "expires" => "value"] not found in %s',
@@ -89,8 +88,8 @@ class UserSession {
      * @return \MyENA\PHPIPAMAPI\Models\UserSession
      */
     public static function fromStdClass(\stdClass $data): UserSession {
-        if (isset($data->token) && isset($data->expires)) {
-            return new static($data->token, $data->expires);
+        if (isset($data->expires)) {
+            return new static($data->token ?? '', $data->expires);
         } else {
             throw new \DomainException(sprintf(
                 'Expected format of {"token": "value", "expires": "value"} not found in %s',
@@ -166,5 +165,16 @@ class UserSession {
                 json_last_error_msg()
             ));
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize() {
+        $a = ['expires' => $this->expires ?? null];
+        if (isset($this->token) && '' !== $this->token) {
+            $a['token'] = $this->token;
+        }
+        return $a;
     }
 }

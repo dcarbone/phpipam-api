@@ -1,15 +1,15 @@
-<?php namespace MyENA\PHPIPAMAPI\User;
+<?php namespace MyENA\PHPIPAMAPI\Chain\User\GET;
 
 use MyENA\PHPIPAMAPI\AbstractResponse;
 use MyENA\PHPIPAMAPI\Models\UserSession;
 
 /**
- * Class POSTResponse
- * @package MyENA\PHPIPAMAPI\User
+ * Class ExpiresResponse
+ * @package MyENA\PHPIPAMAPI\Chain\User\GET
  */
-class POSTResponse extends AbstractResponse {
+class ExpiresResponse extends AbstractResponse {
     /**
-     * @param array $data
+     * @param mixed $data
      */
     protected function parseData($data): void {
         $this->data = UserSession::fromArray($data);
@@ -18,7 +18,7 @@ class POSTResponse extends AbstractResponse {
     /**
      * @return \MyENA\PHPIPAMAPI\Models\UserSession
      */
-    public function getData(): ?UserSession {
-        return $this->data ?? null;
+    public function getData(): UserSession {
+        return $this->data;
     }
 }

@@ -7,8 +7,6 @@ use DCarbone\Go\Time;
  * @package MyENA\PHPIPAMAPI
  */
 abstract class AbstractModel implements \JsonSerializable {
-    private $keys = [];
-
     /**
      * AbstractModel constructor.
      * @param array $data
@@ -16,42 +14,26 @@ abstract class AbstractModel implements \JsonSerializable {
     public function __construct(array $data = []) {
         foreach ($data as $k => $v) {
             $this->{$k} = $v;
-            $this->keys[] = $k;
         }
     }
 
     /**
-     * @return array
+     * @param \DCarbone\Go\Time\Time|null $time
+     * @return null|string
      */
-    public function jsonSerialize() {
-        $a = [];
-        foreach ($this->keys as $key) {
-            $a[$key] = $this->{$key};
+    protected function marshalDate(?Time\Time $time): ?string {
+        if (null === $time || $time->IsZero()) {
+            return null;
+        } else {
+            return $time->format(PHPIPAM_DATETIME_FORMAT);
         }
-        return $a;
-    }
-
-    /**
-     * @param mixed $input
-     * @return bool
-     */
-    protected function parseBool($input): bool {
-        $type = gettype($input);
-        if ('string' === $type) {
-            return 'Yes' === $input || '1' === $input;
-        } else if ('integer' === $type) {
-            return 0 !== $input;
-        } else if ('double' === $type) {
-            return 0 != $input;
-        }
-        return false;
     }
 
     /**
      * @param null|string $input
      * @return \DCarbone\Go\Time\Time
      */
-    protected function parseDate(?string $input): Time\Time {
+    protected function unmarshalDate(?string $input): Time\Time {
         if (null === $input) {
             return Time::New();
         } else {

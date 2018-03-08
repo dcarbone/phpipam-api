@@ -1,10 +1,10 @@
-<?php namespace MyENA\PHPIPAMAPI\User;
+<?php namespace MyENA\PHPIPAMAPI\Chain\User;
 
 use MyENA\PHPIPAMAPI\AbstractResponse;
 
 /**
  * Class DELETEResponse
- * @package MyENA\PHPIPAMAPI\User
+ * @package MyENA\PHPIPAMAPI\Chain\User
  */
 class DELETEResponse extends AbstractResponse {
     /**

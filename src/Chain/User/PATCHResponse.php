@@ -1,11 +1,11 @@
-<?php namespace MyENA\PHPIPAMAPI\User;
+<?php namespace MyENA\PHPIPAMAPI\Chain\User;
 
 use MyENA\PHPIPAMAPI\AbstractResponse;
 use MyENA\PHPIPAMAPI\Models\UserSession;
 
 /**
  * Class PATCHResponse
- * @package MyENA\PHPIPAMAPI\User
+ * @package MyENA\PHPIPAMAPI\Chain\User
  */
 class PATCHResponse extends AbstractResponse {
     /**

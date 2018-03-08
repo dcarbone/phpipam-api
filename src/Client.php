@@ -5,6 +5,8 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request as PSR7Request;
 use GuzzleHttp\Psr7\Uri as PSR7Uri;
 use GuzzleHttp\RequestOptions;
+use MyENA\PHPIPAMAPI\Chain\AddressesController;
+use MyENA\PHPIPAMAPI\Chain\UserController;
 use MyENA\PHPIPAMAPI\Error\ApiError;
 use MyENA\PHPIPAMAPI\Error\TransportError;
 use MyENA\PHPIPAMAPI\Models\UserSession;
@@ -63,17 +65,17 @@ class Client implements LoggerAwareInterface {
     }
 
     /**
-     * @return \MyENA\PHPIPAMAPI\Addresses
+     * @return \MyENA\PHPIPAMAPI\Chain\AddressesController
      */
-    public function Addresses(): Addresses {
-        return new Addresses($this);
+    public function Addresses(): AddressesController {
+        return new AddressesController($this);
     }
 
     /**
-     * @return \MyENA\PHPIPAMAPI\User
+     * @return \MyENA\PHPIPAMAPI\Chain\UserController
      */
-    public function User(): User {
-        return new User($this);
+    public function User(): UserController {
+        return new UserController($this);
     }
 
     /**
@@ -96,7 +98,7 @@ class Client implements LoggerAwareInterface {
      * @param \MyENA\PHPIPAMAPI\Request $request
      * @return array(
      * @type \Psr\Http\Message\ResponseInterface    Response, if we received one
-     * @type \MyENA\PHPIPAMAPI\Error                  Error, if we saw one
+     * @type \MyENA\PHPIPAMAPI\Error                Error, if we saw one
      * )
      */
     public function do(Request $request): array {
@@ -126,7 +128,7 @@ class Client implements LoggerAwareInterface {
             return [$resp, new ApiError($code, $resp->getBody()->getContents())];
         }
         // if this request modifies user session information, try to prevent weirdness.
-        if (User::PATH === $request->uri()) {
+        if (UserController::PATH === $request->uri()) {
             $this->updateSession($psrRequest, $resp);
         }
         return [$resp, null];
@@ -155,7 +157,7 @@ class Client implements LoggerAwareInterface {
      */
     private function clientUserSession(): ?UserSession {
         if (!isset($this->clientUserSession)) {
-            /** @var \MyENA\PHPIPAMAPI\User\POSTResponse $resp */
+            /** @var \MyENA\PHPIPAMAPI\Chain\User\POSTResponse $resp */
             /** @var \MyENA\PHPIPAMAPI\Error $err */
             [$resp, $err] = $this->User()->POST()->execute();
             if (null !== $err) {

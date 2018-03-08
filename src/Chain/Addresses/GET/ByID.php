@@ -1,7 +1,7 @@
-<?php namespace MyENA\PHPIPAMAPI\Addresses\GET;
+<?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET;
 
+use MyENA\PHPIPAMAPI\Chain\Addresses\GET;
 use MyENA\PHPIPAMAPI\Client;
-use MyENA\PHPIPAMAPI\Addresses\GET;
 
 /**
  * Class ByID
@@ -11,7 +11,7 @@ class ByID {
     /** @var \MyENA\PHPIPAMAPI\Client */
     private $client;
 
-    /** @var \MyENA\PHPIPAMAPI\Addresses\GET */
+    /** @var \MyENA\PHPIPAMAPI\Chain\Addresses\GET */
     private $get;
 
     /** @var string */
@@ -20,7 +20,7 @@ class ByID {
     /**
      * ByID constructor.
      * @param \MyENA\PHPIPAMAPI\Client $client
-     * @param \MyENA\PHPIPAMAPI\Addresses\GET $GET
+     * @param \MyENA\PHPIPAMAPI\Chain\Addresses\GET $GET
      * @param string $id
      */
     public function __construct(Client $client, GET $GET, string $id) {

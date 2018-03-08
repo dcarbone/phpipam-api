@@ -1,13 +1,13 @@
-<?php namespace MyENA\PHPIPAMAPI\User\GET;
+<?php namespace MyENA\PHPIPAMAPI\Chain\User\GET;
 
 use MyENA\PHPIPAMAPI\AbstractResponse;
 use MyENA\PHPIPAMAPI\Models\User;
 
 /**
- * Class AdminsResponse
- * @package MyENA\PHPIPAMAPI\User\GET
+ * Class AllResponse
+ * @package MyENA\PHPIPAMAPI\Chain\User\GET
  */
-class AdminsResponse extends AbstractResponse {
+class AllResponse extends AbstractResponse {
     /**
      * @param mixed $data
      */
