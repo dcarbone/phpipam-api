@@ -1,4 +1,4 @@
-<?php namespace ENA\PHPIPAMAPI\Config;
+<?php namespace MyENA\PHPIPAMAPI\Config;
 
 use DCarbone\PHPConsulAPI\Consul;
 use DCarbone\PHPConsulAPI\Health\ServiceEntry;
@@ -7,9 +7,9 @@ use GuzzleHttp\ClientInterface;
 
 /**
  * Class ConsulConfig
- * @package ENA\PHPIPAMAPI\Config
+ * @package MyENA\PHPIPAMAPI\Config
  */
-class ConsulConfig extends Config {
+class ConsulConfig extends LocalConfig {
 
     /** @var string */
     protected $serviceName;

@@ -1,35 +1,35 @@
-<?php namespace ENA\PHPIPAMAPI;
+<?php namespace MyENA\PHPIPAMAPI;
 
-use ENA\PHPIPAMAPI\Addresses\GET;
-use ENA\PHPIPAMAPI\Addresses\POST;
+use MyENA\PHPIPAMAPI\Addresses\GET;
+use MyENA\PHPIPAMAPI\Addresses\POST;
 
 /**
  * Class Addresses
- * @package ENA\PHPIPAMAPI\Request
+ * @package MyENA\PHPIPAMAPI\Request
  */
 class Addresses {
     const ROOT_PATH = 'addresses/';
 
-    /** @var \ENA\PHPIPAMAPI\Client */
+    /** @var \MyENA\PHPIPAMAPI\Client */
     private $client;
 
     /**
      * Address constructor.
-     * @param \ENA\PHPIPAMAPI\Client $client
+     * @param \MyENA\PHPIPAMAPI\Client $client
      */
     public function __construct(Client $client) {
         $this->client = $client;
     }
 
     /**
-     * @return \ENA\PHPIPAMAPI\Addresses\GET
+     * @return \MyENA\PHPIPAMAPI\Addresses\GET
      */
     public function GET(): GET {
         return new GET($this->client, $this);
     }
 
     /**
-     * @return \ENA\PHPIPAMAPI\Addresses\POST
+     * @return \MyENA\PHPIPAMAPI\Addresses\POST
      */
     public function POST(): POST {
         return new POST($this->client, $this);

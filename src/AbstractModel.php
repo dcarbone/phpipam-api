@@ -1,8 +1,8 @@
-<?php namespace ENA\PHPIPAMAPI;
+<?php namespace MyENA\PHPIPAMAPI;
 
 /**
  * Class AbstractModel
- * @package ENA\PHPIPAMAPI
+ * @package MyENA\PHPIPAMAPI
  */
 abstract class AbstractModel implements \JsonSerializable, \Serializable {
     private $keys = [];

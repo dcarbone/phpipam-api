@@ -1,12 +1,13 @@
-<?php namespace ENA\PHPIPAMAPI\Response;
+<?php namespace MyENA\PHPIPAMAPI;
 
 use DCarbone\Go\Time;
 use DCarbone\Go\Time\Duration;
-use ENA\PHPIPAMAPI\Response;
+use MyENA\PHPIPAMAPI\Error\ApiError;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class AbstractResponse
- * @package ENA\PHPIPAMAPI\Response
+ * @package MyENA\PHPIPAMAPI
  */
 abstract class AbstractResponse {
     /** @var int */
@@ -21,13 +22,66 @@ abstract class AbstractResponse {
 
     /**
      * AbstractResponse constructor.
-     * @param \ENA\PHPIPAMAPI\Response $response
+     * @param int $code
+     * @param bool $success
+     * @param mixed $data
+     * @param string $time
      */
-    public function __construct(Response $response) {
-        $this->code = $response->code;
-        $this->success = $response->success;
-        $this->time = Time::ParseDuration("{$response->time}s");
-        $this->parseData($response->data);
+    public function __construct(int $code, bool $success, $data, string $time) {
+        $this->code = $code;
+        $this->success = $success;
+        $this->time = Time::ParseDuration("{$time}s");
+        $this->parseData($data);
+    }
+
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @return array(
+     * @type static                     Decoded response, if no errors were seen
+     * @type \MyENA\PHPIPAMAPI\Error      Error description, if encountered
+     * )
+     */
+    public static function fromPSR7Response(ResponseInterface $response): array {
+        $contents = $response->getBody()->getContents();
+        $decoded = json_decode($contents, true);
+        if (JSON_ERROR_NONE === json_last_error()) {
+            if (is_array($decoded)) { // TODO: better test for root object
+                if (isset($decoded['code']) &&
+                    isset($decoded['success']) &&
+                    // TODO: are there responses that are "OK" but have something other than a "data" field?
+                    isset($decoded['data']) &&
+                    isset($decoded['time'])) {
+                    return [
+                        new static($decoded['code'], $decoded['success'], $decoded['data'], $decoded['time']),
+                        null,
+                    ];
+                } else {
+                    return [
+                        null,
+                        new ApiError(-1, sprintf(
+                            'Response expected to have fields ["code","success","data","error"], saw ["%s"]',
+                            implode('","', array_keys($decoded))
+                        )),
+                    ];
+                }
+            } else {
+                return [
+                    null,
+                    new ApiError(-1, sprintf(
+                        'Response expected to be json-encoded object, saw "%s"',
+                        gettype($decoded)
+                    )),
+                ];
+            }
+        } else {
+            return [
+                null,
+                new ApiError(-1, sprintf(
+                    'Response returned invalid JSON: %s',
+                    $contents
+                )),
+            ];
+        }
     }
 
     /**

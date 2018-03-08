@@ -1,11 +1,11 @@
-<?php namespace ENA\PHPIPAMAPI\User;
+<?php namespace MyENA\PHPIPAMAPI\User;
 
 use DCarbone\Go\Time;
-use ENA\PHPIPAMAPI\AbstractModel;
+use MyENA\PHPIPAMAPI\AbstractModel;
 
 /**
  * Class POSTResponseData
- * @package ENA\PHPIPAMAPI\User
+ * @package MyENA\PHPIPAMAPI\User
  */
 class POSTResponseData extends AbstractModel {
     const EXPIRES_FORMAT = 'Y-m-d H:i:s';

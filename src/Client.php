@@ -1,12 +1,12 @@
-<?php namespace ENA\PHPIPAMAPI;
+<?php namespace MyENA\PHPIPAMAPI;
 
-use ENA\PHPIPAMAPI\Config\ConfigProvider;
-use ENA\PHPIPAMAPI\Error\ApiError;
-use ENA\PHPIPAMAPI\Error\TransportError;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request as PSR7Request;
 use GuzzleHttp\Psr7\Uri as PSR7Uri;
 use GuzzleHttp\RequestOptions;
+use MyENA\PHPIPAMAPI\Error\ApiError;
+use MyENA\PHPIPAMAPI\Error\TransportError;
+use MyENA\PHPIPAMAPI\User\POSTResponseData;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -15,19 +15,19 @@ use Psr\Log\NullLogger;
 
 /**
  * Class Client
- * @package ENA\PHPIPAMAPI
+ * @package MyENA\PHPIPAMAPI
  */
 class Client implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
-    /** @var \ENA\PHPIPAMAPI\Config\ConfigProvider */
+    /** @var \MyENA\PHPIPAMAPI\Config */
     private $config;
 
     /** @var string */
     private $serviceAddress;
 
-    /** @var string */
-    private $token;
+    /** @var \MyENA\PHPIPAMAPI\User\POSTResponseData */
+    private $clientSession;
 
     /** @var bool */
     private $silent;
@@ -41,10 +41,10 @@ class Client implements LoggerAwareInterface {
 
     /**
      * Client constructor.
-     * @param \ENA\PHPIPAMAPI\Config\ConfigProvider $config
+     * @param \MyENA\PHPIPAMAPI\Config $config
      * @param \Psr\Log\LoggerInterface|null $logger
      */
-    public function __construct(ConfigProvider $config, LoggerInterface $logger = null) {
+    public function __construct(Config $config, LoggerInterface $logger = null) {
         if (null === $logger) {
             $logger = new NullLogger();
         }
@@ -54,31 +54,40 @@ class Client implements LoggerAwareInterface {
     }
 
     /**
-     * @return \ENA\PHPIPAMAPI\Addresses
+     * @return \MyENA\PHPIPAMAPI\Addresses
      */
     public function Addresses(): Addresses {
         return new Addresses($this);
     }
 
     /**
-     * @return \ENA\PHPIPAMAPI\User
+     * @return \MyENA\PHPIPAMAPI\User
      */
     public function User(): User {
         return new User($this);
     }
 
     /**
-     * @return \ENA\PHPIPAMAPI\Config\ConfigProvider
+     * @return \MyENA\PHPIPAMAPI\Config
      */
-    public function getConfig(): ConfigProvider {
+    public function getConfig(): Config {
         return $this->config;
     }
 
     /**
-     * @param \ENA\PHPIPAMAPI\Request $request
+     * Returns the current token of this client
+     *
+     * @return \MyENA\PHPIPAMAPI\User\POSTResponseData|null
+     */
+    public function getClientSession(): ?POSTResponseData {
+        return $this->clientSession ?? null;
+    }
+
+    /**
+     * @param \MyENA\PHPIPAMAPI\Request $request
      * @return array(
-     * @type \ENA\PHPIPAMAPI\Response   Response, if we received one
-     * @type \ENA\PHPIPAMAPI\Error      Error, if we saw one
+     * @type \Psr\Http\Message\ResponseInterface    Response, if we received one
+     * @type \MyENA\PHPIPAMAPI\Error                  Error, if we saw one
      * )
      */
     public function do(Request $request): array {
@@ -107,7 +116,46 @@ class Client implements LoggerAwareInterface {
         if (200 < $code || $code >= 300) {
             return [$resp, new ApiError($code, $resp->getBody()->getContents())];
         }
-        return Response::fromPSR7Response($resp);
+        // if a logout call is seen, check if it impacts our local client session
+        if (isset($this->clientSession) &&
+            false === $request->authenticated() &&
+            'DELETE' === $request->method() &&
+            User::ROOT_PATH === $request->uri() &&
+            isset(($headers = $request->headers())[PHPIPAM_TOKEN_HEADER]) &&
+            $headers[PHPIPAM_TOKEN_HEADER] === $this->clientSession->getToken()) {
+            if (!$this->silent) {
+                $this->logger->info('Client token has been invalidated');
+            }
+            $this->clientSession = null;
+        } // try to catch login calls that are using our client user information
+        else if (!isset($this->clientSession) &&
+            false === $request->authenticated() &&
+            'POST' === $request->method() &&
+            User::ROOT_PATH === $request->uri() &&
+            isset(($headers = $request->headers())['Authorization']) &&
+            $headers['Authorization'] ===
+            sprintf(
+                'Basic %s',
+                base64_encode("{$this->getConfig()->getUsername()}:{$this->getConfig()->getPassword()}")
+            )) {
+            if (!$this->silent) {
+                $this->logger->info('Client token has been created');
+            }
+            // TODO: Really do not like this...
+            $decoded = json_decode($resp->getBody()->getContents());
+            if (JSON_ERROR_NONE === json_last_error() &&
+                is_object($decoded) &&
+                isset($decoded->data) &&
+                is_object($decoded->data) &&
+                isset($decoded->data->token) &&
+                isset($decoded->data->expires)) {
+                $this->clientSession = new POSTResponseData([
+                    'token'   => $decoded->data->token,
+                    'expires' => $decoded->data->expires,
+                ]);
+            }
+        }
+        return [$resp, null];
     }
 
     /**
@@ -127,12 +175,12 @@ class Client implements LoggerAwareInterface {
     }
 
     /**
-     * @return string
+     * @return \MyENA\PHPIPAMAPI\User\POSTResponseData
      */
-    private function token(): string {
+    private function clientSession(): POSTResponseData {
         if (!isset($this->token)) {
-            /** @var \ENA\PHPIPAMAPI\User\POSTResponse $resp */
-            /** @var \ENA\PHPIPAMAPI\Error $err */
+            /** @var \MyENA\PHPIPAMAPI\User\POSTResponse $resp */
+            /** @var \MyENA\PHPIPAMAPI\Error $err */
             [$resp, $err] = $this->User()->POST()->execute();
             if (null !== $err) {
                 throw new \RuntimeException(sprintf(
@@ -141,13 +189,16 @@ class Client implements LoggerAwareInterface {
                     $err
                 ));
             }
-            $this->token = $resp->getData()->getToken();
+            $this->token = $resp->getData();
+            if (!$this->silent) {
+                $this->logger->info('Client token has been created');
+            }
         }
         return $this->token;
     }
 
     /**
-     * @param \ENA\PHPIPAMAPI\Request $r
+     * @param \MyENA\PHPIPAMAPI\Request $r
      * @return \Psr\Http\Message\RequestInterface
      */
     private function compilePSR7(Request $r): RequestInterface {
@@ -162,7 +213,7 @@ class Client implements LoggerAwareInterface {
         return new PSR7Request(
             $r->method(),
             $uri,
-            $r->headers() + ($r->authenticated() ? ['phpipam-token' => $this->token()] : []),
+            $r->headers() + ($r->authenticated() ? [PHPIPAM_TOKEN_HEADER => $this->clientSession()->getToken()] : []),
             $r->body());
     }
 }

@@ -1,21 +1,22 @@
 <?php namespace MyENA\PHPIPAMAPI\User;
 
 use MyENA\PHPIPAMAPI\Client;
+use MyENA\PHPIPAMAPI\Error\ApiError;
 use MyENA\PHPIPAMAPI\Request;
 use MyENA\PHPIPAMAPI\User;
 
 /**
- * Class POST
- * @package MyENA\PHPIPAMAPI\Request\User
+ * Class DELETE
+ * @package MyENA\PHPIPAMAPI\User
  */
-class POST {
+class DELETE {
     /** @var \MyENA\PHPIPAMAPI\Client */
     private $client;
     /** @var \MyENA\PHPIPAMAPI\User */
     private $user;
 
     /**
-     * POST constructor.
+     * DELETE constructor.
      * @param \MyENA\PHPIPAMAPI\Client $client
      * @param \MyENA\PHPIPAMAPI\User $user
      */
@@ -25,28 +26,22 @@ class POST {
     }
 
     /**
-     * Perform user login with configured username and password
+     * Perform user logout
      *
-     * @return array(
-     * @type \MyENA\PHPIPAMAPI\User\POSTResponse
-     * @type \MyENA\PHPIPAMAPI\Error|null
-     * )
+     * @return array
      */
     public function execute(): array {
+        if (null === ($cs = $this->client->getClientSession())) {
+            return [null, new ApiError(400, 'Client session is not open')];
+        }
         $r = new Request(
-            'post',
+            'delete',
             User::ROOT_PATH,
-            [
-                'Authorization' => sprintf(
-                    'Basic %s',
-                    base64_encode("{$this->client->getConfig()->getUsername()}:{$this->client->getConfig()->getPassword()}")
-                ),
-            ],
+            [PHPIPAM_TOKEN_HEADER => $cs->getToken()],
             [],
             null,
             false
         );
-
         /** @var \Psr\Http\Message\ResponseInterface $resp */
         /** @var \MyENA\PHPIPAMAPI\Error $err */
         [$resp, $err] = $this->client->do($r);
@@ -54,6 +49,6 @@ class POST {
             return [null, $err];
         }
 
-        return POSTResponse::fromPSR7Response($resp);
+        return DELETEResponse::fromPSR7Response($resp);
     }
 }

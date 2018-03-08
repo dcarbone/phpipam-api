@@ -3,27 +3,27 @@
 use MyENA\PHPIPAMAPI\AbstractResponse;
 
 /**
- * Class POSTResponse
+ * Class DELETEResponse
  * @package MyENA\PHPIPAMAPI\User
  */
-class POSTResponse extends AbstractResponse {
+class DELETEResponse extends AbstractResponse {
     /**
-     * @param array $data
+     * @param mixed $data
      */
     protected function parseData($data): void {
         if (!is_array($data)) {
             throw new \DomainException(sprintf(
-                'POST /users/ expected "data" property to be object, saw %s',
+                'DELETE /users/ expected "data" property to be object, saw %s',
                 gettype($data)
             ));
         }
-        $this->data = new POSTResponseData($data);
+        $this->data = $data;
     }
 
     /**
-     * @return \MyENA\PHPIPAMAPI\User\POSTResponseData
+     * @return array|null
      */
-    public function getData(): ?POSTResponseData {
+    public function getData(): ?array {
         return $this->data ?? null;
     }
 }

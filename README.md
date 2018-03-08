@@ -10,7 +10,7 @@ To create a [Client](src/Client.php), you must first construct something that im
 ### Standard Configuration
 
 If you have all your PHP IPAM configuration details local to your application you may use the
-[Config](src/Config/Config.php) class, passing an array of configuration details:
+[Config](src/Config/LocalConfig.php) class, passing an array of configuration details:
 
 ```php
 $conf = [
@@ -34,7 +34,7 @@ $config = new \ENA\PHPIPAM\Config\Config($conf);
 If you have a [Consul](https://www.consul.io/) setup going and have your PHPIPAM service registered with it, or use its
 KV store for other config items, you may use the [ConsulConfig](src/Config/ConsulConfig.php) class.  This config uses
 [PHPConsulAPI](https://github.com/dcarbone/php-consul-api) for Consul interaction.  It accepts all
-of the same parameters as the standard [Config](src/Config/Config.php) class, with the following additional 
+of the same parameters as the standard [LocalConfig](src/Config/LocalConfig.php) class, with the following additional 
 Consul-specific ones:
 
 Parameters:

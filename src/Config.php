@@ -1,12 +1,12 @@
-<?php namespace ENA\PHPIPAMAPI\Config;
+<?php namespace MyENA\PHPIPAMAPI;
 
 use GuzzleHttp\ClientInterface;
 
 /**
  * Interface ConfigProvider
- * @package ENA\PHPIPAMAPI\Config
+ * @package MyENA\PHPIPAMAPI
  */
-interface ConfigProvider {
+interface Config {
     /**
      * @return string
      */

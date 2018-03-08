@@ -1,23 +1,23 @@
-<?php namespace ENA\PHPIPAMAPI\Addresses;
+<?php namespace MyENA\PHPIPAMAPI\Addresses;
 
-use ENA\PHPIPAMAPI\Client;
-use ENA\PHPIPAMAPI\Addresses;
+use MyENA\PHPIPAMAPI\Client;
+use MyENA\PHPIPAMAPI\Addresses;
 
 /**
  * Class POST
- * @package ENA\PHPIPAMAPI\Request\Addresses
+ * @package MyENA\PHPIPAMAPI\Request\Addresses
  */
 class POST {
-    /** @var \ENA\PHPIPAMAPI\Client */
+    /** @var \MyENA\PHPIPAMAPI\Client */
     private $client;
 
-    /** @var \ENA\PHPIPAMAPI\Addresses */
+    /** @var \MyENA\PHPIPAMAPI\Addresses */
     private $address;
 
     /**
      * POST constructor.
-     * @param \ENA\PHPIPAMAPI\Client $client
-     * @param \ENA\PHPIPAMAPI\Addresses $address
+     * @param \MyENA\PHPIPAMAPI\Client $client
+     * @param \MyENA\PHPIPAMAPI\Addresses $address
      */
     public function __construct(Client $client, Addresses $address) {
         $this->client = $client;

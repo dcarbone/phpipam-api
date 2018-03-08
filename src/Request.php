@@ -1,8 +1,8 @@
-<?php namespace ENA\PHPIPAMAPI;
+<?php namespace MyENA\PHPIPAMAPI;
 
 /**
  * Class Request
- * @package ENA\PHPIPAMAPI\Request
+ * @package MyENA\PHPIPAMAPI\Request
  */
 class Request {
     /** @var string */

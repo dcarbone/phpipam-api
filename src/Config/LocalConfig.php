@@ -1,13 +1,14 @@
-<?php namespace ENA\PHPIPAMAPI\Config;
+<?php namespace MyENA\PHPIPAMAPI\Config;
 
+use MyENA\PHPIPAMAPI\Config;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 
 /**
- * Class Config
- * @package ENA\PHPIPAMAPI\Config
+ * Class LocalConfig
+ * @package MyENA\PHPIPAMAPI\Config
  */
-class Config implements ConfigProvider {
+class LocalConfig implements Config {
     /** @var string */
     protected $host;
     /** @var int */

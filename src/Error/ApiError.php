@@ -1,11 +1,11 @@
-<?php namespace ENA\PHPIPAMAPI\Error;
+<?php namespace MyENA\PHPIPAMAPI\Error;
 
 use DCarbone\Go\Time;
-use ENA\PHPIPAMAPI\Error;
+use MyENA\PHPIPAMAPI\Error;
 
 /**
  * Class ApiError
- * @package ENA\PHPIPAMAPI\Error
+ * @package MyENA\PHPIPAMAPI\Error
  */
 class ApiError extends Error {
     /** @var bool */

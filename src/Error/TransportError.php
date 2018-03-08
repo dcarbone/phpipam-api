@@ -1,10 +1,10 @@
-<?php namespace ENA\PHPIPAMAPI\Error;
+<?php namespace MyENA\PHPIPAMAPI\Error;
 
-use ENA\PHPIPAMAPI\Error;
+use MyENA\PHPIPAMAPI\Error;
 
 /**
  * Class TransportError
- * @package ENA\PHPIPAMAPI\Response
+ * @package MyENA\PHPIPAMAPI\Response
  */
 class TransportError extends Error {
     /**

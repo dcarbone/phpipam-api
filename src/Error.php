@@ -1,10 +1,10 @@
-<?php namespace ENA\PHPIPAMAPI;
+<?php namespace MyENA\PHPIPAMAPI;
 
-use ENA\PHPIPAMAPI\Error\TransportError;
+use MyENA\PHPIPAMAPI\Error\TransportError;
 
 /**
  * Interface Error
- * @package ENA\PHPIPAMAPI\Response
+ * @package MyENA\PHPIPAMAPI\Response
  */
 abstract class Error implements \JsonSerializable {
 
@@ -75,7 +75,7 @@ abstract class Error implements \JsonSerializable {
 
     /**
      * @param \Exception $e
-     * @return \ENA\PHPIPAMAPI\Error\TransportError
+     * @return \MyENA\PHPIPAMAPI\Error\TransportError
      */
     public static function fromException(\Exception $e): Error {
         return new TransportError($e->getCode(), $e->getMessage());

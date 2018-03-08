@@ -20,7 +20,12 @@
   "require-dev": {
     "myena/default-logger": "@stable"
   },
-  "autoload":{
-    "ENA\\PHPIPAMAPI\\": "src/"
+  "autoload": {
+    "psr-4": {
+      "MyENA\\PHPIPAMAPI\\": "src/"
+    },
+    "files": [
+      "files/constants.php"
+    ]
   }
 }
