@@ -1,7 +1,9 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain;
 
 use MyENA\PHPIPAMAPI\AbstractPart;
+use MyENA\PHPIPAMAPI\Chain\Addresses\DELETE;
 use MyENA\PHPIPAMAPI\Chain\Addresses\GET;
+use MyENA\PHPIPAMAPI\Chain\Addresses\PATCH;
 use MyENA\PHPIPAMAPI\Chain\Addresses\POST;
 use MyENA\PHPIPAMAPI\Part\UriPart;
 
@@ -16,14 +18,28 @@ class AddressesController extends AbstractPart implements UriPart {
      * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET
      */
     public function GET(): GET {
-        return new GET($this->client, $this);
+        return $this->newPart(GET::class);
     }
 
     /**
      * @return \MyENA\PHPIPAMAPI\Chain\Addresses\POST
      */
     public function POST(): POST {
-        return new POST($this->client, $this);
+        return $this->newPart(POST::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\PATCH
+     */
+    public function PATCH(): PATCH {
+        return $this->newPart(PATCH::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\DELETE
+     */
+    public function DELETE(): DELETE {
+        return $this->newPart(DELETE::class);
     }
 
     /**

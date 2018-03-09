@@ -78,12 +78,23 @@ abstract class AbstractPart {
     }
 
     /**
+     * @param array ...$args
+     */
+    protected function parseArgs(...$args): void {
+        // implement as needed
+    }
+
+    /**
      * @param string $class
+     * @param array $args
      * @return \MyENA\PHPIPAMAPI\AbstractPart
      */
-    protected function newPart(string $class): AbstractPart {
+    protected function newPart(string $class, ...$args): AbstractPart {
+        /** @var \MyENA\PHPIPAMAPI\AbstractPart $np */
         $p = $this->parents;
         $p[] = $this;
-        return new $class($this->client, ...$p);
+        $np = new $class($this->client, ...$p);
+        $np->parseArgs(...$args);
+        return $np;
     }
 }

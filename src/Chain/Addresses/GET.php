@@ -1,34 +1,44 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\Addresses;
 
-use MyENA\PHPIPAMAPI\Chain\AddressesController;
-use MyENA\PHPIPAMAPI\Client;
+use MyENA\PHPIPAMAPI\AbstractPart;
+use MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByID;
+use MyENA\PHPIPAMAPI\Chain\Addresses\GET\FirstFree;
+use MyENA\PHPIPAMAPI\Chain\Addresses\GET\Search;
+use MyENA\PHPIPAMAPI\Part\MethodPart;
 
 /**
  * Class GET
  * @package MyENA\PHPIPAMAPI\Request\Addresses
  */
-class GET {
-    /** @var \MyENA\PHPIPAMAPI\Client */
-    private $client;
-
-    /** @var \MyENA\PHPIPAMAPI\Chain\AddressesController */
-    private $address;
+class GET extends AbstractPart implements MethodPart {
+    const METHOD = 'GET';
 
     /**
-     * GET constructor.
-     * @param \MyENA\PHPIPAMAPI\Client $client
-     * @param \MyENA\PHPIPAMAPI\Chain\AddressesController $address
+     * @return string
      */
-    public function __construct(Client $client, AddressesController $address) {
-        $this->client = $client;
-        $this->address = $address;
+    public function getRequestMethod(): string {
+        return self::METHOD;
     }
 
     /**
      * @param string $id
      * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByID
      */
-    public function byID(string $id) {
-        return new GET\ByID($this->client, $this, $id);
+    public function ByID(string $id): ByID {
+        return $this->newPart(ByID::class, $id);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\Search
+     */
+    public function Search(): Search {
+        return $this->newPart(Search::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\FirstFree
+     */
+    public function FirtFree(): FirstFree {
+        return $this->newPart(FirstFree::class);
     }
 }

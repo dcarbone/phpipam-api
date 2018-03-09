@@ -4,11 +4,11 @@ use MyENA\PHPIPAMAPI\AbstractPart;
 use MyENA\PHPIPAMAPI\Part\MethodPart;
 
 /**
- * Class POST
- * @package MyENA\PHPIPAMAPI\Request\Addresses
+ * Class DELETE
+ * @package MyENA\PHPIPAMAPI\Chain\Addresses
  */
-class POST extends AbstractPart implements MethodPart {
-    const METHOD = 'POST';
+class DELETE extends AbstractPart implements MethodPart {
+    const METHOD = 'DELETE';
 
     /**
      * @return string

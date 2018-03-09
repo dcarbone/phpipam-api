@@ -2,7 +2,7 @@
 
 use DCarbone\Go\Time;
 use DCarbone\Go\Time\Duration;
-use MyENA\PHPIPAMAPI\Error\ApiError;
+use MyENA\PHPIPAMAPI\Error\ResponseError;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -20,6 +20,9 @@ abstract class AbstractResponse {
     /** @var mixed */
     protected $data;
 
+    /** @var string|null */
+    protected $message;
+
     /**
      * AbstractResponse constructor.
      * @param int $code
@@ -27,10 +30,11 @@ abstract class AbstractResponse {
      * @param mixed $data
      * @param string $time
      */
-    public function __construct(int $code, bool $success, $data, string $time) {
+    public function __construct(int $code, bool $success, string $time, $data = [], ?string $message = null) {
         $this->code = $code;
         $this->success = $success;
         $this->time = Time::ParseDuration("{$time}s");
+        $this->message = $message;
         $this->parseData($data);
     }
 
@@ -51,37 +55,43 @@ abstract class AbstractResponse {
             if (is_array($decoded)) { // TODO: better test for root object
                 if (isset($decoded['code']) &&
                     isset($decoded['success']) &&
-                    // TODO: are there responses that are "OK" but have something other than a "data" field?
-                    isset($decoded['data']) &&
+                    (isset($decoded['data']) || isset($decoded['message'])) &&
                     isset($decoded['time'])) {
                     return [
-                        new static($decoded['code'], $decoded['success'], $decoded['data'], $decoded['time']),
+                        new static($decoded['code'],
+                            $decoded['success'],
+                            $decoded['time'],
+                            $decoded['data'] ?? [],
+                            $decoded['message'] ?? null),
                         null,
                     ];
                 } else {
                     return [
                         null,
-                        new ApiError(-1, sprintf(
+                        new ResponseError(-1, sprintf(
                             'Response expected to have fields ["code","success","data","error"], saw ["%s"]',
-                            implode('","', array_keys($decoded))
+                            implode('","', array_keys($decoded)),
+                            $contents
                         )),
                     ];
                 }
             } else {
                 return [
                     null,
-                    new ApiError(-1, sprintf(
+                    new ResponseError(-1, sprintf(
                         'Response expected to be json-encoded object, saw "%s"',
-                        gettype($decoded)
+                        gettype($decoded),
+                        $contents
                     )),
                 ];
             }
         } else {
             return [
                 null,
-                new ApiError(-1, sprintf(
+                new ResponseError(json_last_error(), sprintf(
                     'Response returned invalid JSON: %s',
-                    json_last_error_msg()
+                    json_last_error_msg(),
+                    $contents
                 )),
             ];
         }
@@ -97,7 +107,7 @@ abstract class AbstractResponse {
     /**
      * @return bool
      */
-    public function wasSuccess(): bool {
+    public function isSuccess(): bool {
         return $this->success;
     }
 
@@ -106,6 +116,13 @@ abstract class AbstractResponse {
      */
     public function getTime(): Duration {
         return $this->time;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getMessage(): ?string {
+        return $this->message;
     }
 
     /**

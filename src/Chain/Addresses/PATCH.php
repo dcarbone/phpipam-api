@@ -4,11 +4,11 @@ use MyENA\PHPIPAMAPI\AbstractPart;
 use MyENA\PHPIPAMAPI\Part\MethodPart;
 
 /**
- * Class POST
- * @package MyENA\PHPIPAMAPI\Request\Addresses
+ * Class PATCH
+ * @package MyENA\PHPIPAMAPI\Chain\Addresses
  */
-class POST extends AbstractPart implements MethodPart {
-    const METHOD = 'POST';
+class PATCH extends AbstractPart implements MethodPart {
+    const METHOD = 'PATCH';
 
     /**
      * @return string
