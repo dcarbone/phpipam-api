@@ -11,12 +11,12 @@ use Psr\Http\Message\ResponseInterface;
  */
 class UserSession implements \JsonSerializable {
     /** @var string */
-    private $token;
+    protected $token;
     /** @var string */
-    private $expires;
+    protected $expires;
 
     /** @var \DCarbone\Go\Time\Time */
-    private $time;
+    protected $time;
 
     /**
      * ClientSession constructor.

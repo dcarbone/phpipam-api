@@ -38,7 +38,7 @@ class GET extends AbstractPart implements MethodPart {
     /**
      * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\FirstFree
      */
-    public function FirtFree(): FirstFree {
+    public function FirstFree(): FirstFree {
         return $this->newPart(FirstFree::class);
     }
 }

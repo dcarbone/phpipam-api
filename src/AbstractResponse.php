@@ -27,8 +27,9 @@ abstract class AbstractResponse {
      * AbstractResponse constructor.
      * @param int $code
      * @param bool $success
-     * @param mixed $data
      * @param string $time
+     * @param mixed $data
+     * @param null|string $message
      */
     public function __construct(int $code, bool $success, string $time, $data = [], ?string $message = null) {
         $this->code = $code;

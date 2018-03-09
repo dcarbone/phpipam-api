@@ -9,43 +9,43 @@ use MyENA\PHPIPAMAPI\AbstractModel;
  */
 class IPAddress extends AbstractModel {
     /** @var int|null */
-    private $id = 0;
+    protected $id = 0;
     /** @var int|null */
-    private $subnetId = 0;
+    protected $subnetId = 0;
     /** @var string|null */
-    private $ip_addr = '';
+    protected $ip_addr = '';
     /** @var int|null */
-    private $is_gateway = 0;
+    protected $is_gateway = 0;
     /** @var string|null */
-    private $description = '';
+    protected $description = '';
     /** @var string|null */
-    private $hostname = '';
+    protected $hostname = '';
     /** @var string|null */
-    private $mac = '';
+    protected $mac = '';
     /** @var string|null */
-    private $owner = '';
+    protected $owner = '';
     /** @var int|null */
-    private $state = 0;
+    protected $state = 0;
     /** @var int|null */
-    private $switch = 0;
+    protected $switch = 0;
     /** @var int|null */
-    private $location = 0;
+    protected $location = 0;
     /** @var int|null */
-    private $port = 0;
+    protected $port = 0;
     /** @var string|null */
-    private $note = '';
+    protected $note = '';
     /** @var \DCarbone\Go\Time\Time|null */
-    private $lastSeen = null;
+    protected $lastSeen = null;
     /** @var int|null */
-    private $excludePing = 0;
+    protected $excludePing = 0;
     /** @var int|null */
-    private $PTRIgnore = 0;
+    protected $PTRIgnore = 0;
     /** @var int|null */
-    private $PTR = 0;
+    protected $PTR = 0;
     /** @var string|null */
-    private $firewallAddressObject = '';
+    protected $firewallAddressObject = '';
     /** @var \DCarbone\Go\Time\Time|null */
-    private $editDate = null;
+    protected $editDate = null;
 
     /**
      * IPAddress constructor.
