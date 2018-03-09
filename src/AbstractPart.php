@@ -1,9 +1,16 @@
 <?php namespace MyENA\PHPIPAMAPI;
 
+use MyENA\PHPIPAMAPI\Part\BodyPart;
+use MyENA\PHPIPAMAPI\Part\ExecutablePart;
+use MyENA\PHPIPAMAPI\Part\HeaderPart;
 use MyENA\PHPIPAMAPI\Part\MethodPart;
+use MyENA\PHPIPAMAPI\Part\ParamPart;
+use MyENA\PHPIPAMAPI\Part\UnauthenticatedPart;
 use MyENA\PHPIPAMAPI\Part\UriPart;
 
 /**
+ * TODO: Improve efficiency of parameter handling
+ *
  * Class AbstractPart
  * @package MyENA\PHPIPAMAPI
  */
@@ -21,6 +28,64 @@ abstract class AbstractPart {
     public function __construct(Client $client, AbstractPart ...$parents) {
         $this->client = $client;
         $this->parents = $parents;
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Request
+     */
+    public function buildRequest(): Request {
+        if ($this instanceof ExecutablePart) {
+            return new Request(
+                $this->findMethod(),
+                $this->buildUri(),
+                $this->compileRequestHeaders(),
+                $this->compileQueryParameters(),
+                ($this instanceof BodyPart ? $this->getBody() : null),
+                !($this instanceof UnauthenticatedPart)
+            );
+        } else {
+            throw $this->createInvalidChainException('ExecutablePart');
+        }
+    }
+
+    /**
+     * @param \MyENA\PHPIPAMAPI\Part\ParamPart $part
+     * @param array $defined
+     */
+    protected function parseParameters(ParamPart $part, array $defined = []): void {
+        foreach ($part->getParameters() as $parameter) {
+            $parameter->setValue($defined[$parameter->getName()] ?? null);
+            if (!$parameter->isValid()) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Parameter %s failed %s validator with value: %s',
+                    $parameter->getName(),
+                    $parameter->getLastFailedValidator()->name(),
+                    !is_resource($parameter->getValue()) ? json_encode($parameter->getValue()) : 'resource'
+                ));
+            }
+        }
+    }
+
+    /**
+     * @param string $class
+     * @param array $parameters
+     * @return \MyENA\PHPIPAMAPI\AbstractPart
+     */
+    protected function newPart(string $class, array $parameters = []): AbstractPart {
+        /** @var \MyENA\PHPIPAMAPI\AbstractPart $np */
+        $p = $this->parents;
+        $p[] = $this;
+        $np = new $class($this->client, ...$p);
+        if ($np instanceof ParamPart) {
+            $np->parseParameters($np, $parameters);
+        } else if (0 !== ($cnt = count($parameters))) {
+            throw new \DomainException(sprintf(
+                'Part %s does not have any parameters, yet %d were passed',
+                get_class($np),
+                $cnt
+            ));
+        }
+        return $np;
     }
 
     /**
@@ -43,20 +108,96 @@ abstract class AbstractPart {
      * @return string
      */
     protected function buildUri(): string {
-        if ($this instanceof UriPart) {
-            $uri = $this->getUriPart();
-        } else {
-            $uri = '';
-        }
+        $routeParams = [];
+        $uri = '';
         foreach ($this->parents as $parent) {
             if ($parent instanceof UriPart) {
-                $uri = "{$parent->getUriPart()}{$uri}";
+                $uri = "{$uri}{$parent->getUriPart()}";
             }
+            if ($parent instanceof ParamPart) {
+                foreach ($parent->getParameters() as $parameter) {
+                    if ($parameter->getLocation() === Parameter::IN_ROUTE) {
+                        $routeParams[$parameter->getName()] = $parameter->getEncodedValue();
+                    }
+                }
+            }
+        }
+        if ($this instanceof UriPart) {
+            $uri = "{$uri}{$this->getUriPart()}";
         }
         if ('' === $uri) {
             throw $this->createInvalidChainException('UriPart');
         }
+        if ($this instanceof ParamPart) {
+            foreach ($this->getParameters() as $parameter) {
+                if ($parameter->getLocation() === Parameter::IN_ROUTE) {
+                    $routeParams[$parameter->getName()] = $parameter->getEncodedValue();
+                }
+            }
+        }
+        foreach ($routeParams as $name => $value) {
+            $uri = str_replace("{{$name}}", $value, $uri);
+        }
         return $uri;
+    }
+
+    /**
+     * @return array
+     */
+    protected function compileQueryParameters(): array {
+        $queryParams = [];
+        if ($this instanceof ParamPart) {
+            foreach ($this->getParameters() as $parameter) {
+                if ($parameter->getLocation() === Parameter::IN_QUERY) {
+                    $queryParams[$parameter->getName()] = $parameter->getValue();
+                }
+            }
+        }
+        foreach ($this->parents as $parent) {
+            if ($parent instanceof ParamPart) {
+                foreach ($parent->getParameters() as $parameter) {
+                    if ($parameter->getLocation() === Parameter::IN_QUERY) {
+                        $queryParams[$parameter->getName()] = $parameter->getValue();
+                    }
+                }
+            }
+        }
+        return array_filter(
+            $queryParams,
+            function($v) {
+                return null !== $v;
+            }
+        );
+    }
+
+    /**
+     * @return array
+     */
+    protected function compileRequestHeaders(): array {
+        $headers = [];
+        if ($this instanceof HeaderPart) {
+            $headers = $this->getRequestHeaders();
+        }
+        foreach ($this->parents as $parent) {
+            if ($parent instanceof HeaderPart) {
+                foreach ($parent->getRequestHeaders() as $header => $value) {
+                    if (!isset($headers[$header])) {
+                        $headers[$header] = $value;
+                    } else if (is_array($headers[$header])) {
+                        if (is_array($value)) {
+                            $headers[$header] = array_merge($headers[$header], $value);
+                        } else {
+                            $headers[$header][] = $value;
+                        }
+                    } else if (is_array($value)) {
+                        $headers[$header] = array_merge([$headers[$header]], $value);
+                    } else {
+                        $headers[$header] = [$headers[$header], $value];
+                    }
+                }
+            }
+        }
+        return $headers;
     }
 
     /**
@@ -75,26 +216,5 @@ abstract class AbstractPart {
             $missing,
             implode('", "', $parts)
         ));
-    }
-
-    /**
-     * @param array ...$args
-     */
-    protected function parseArgs(...$args): void {
-        // implement as needed
-    }
-
-    /**
-     * @param string $class
-     * @param array $args
-     * @return \MyENA\PHPIPAMAPI\AbstractPart
-     */
-    protected function newPart(string $class, ...$args): AbstractPart {
-        /** @var \MyENA\PHPIPAMAPI\AbstractPart $np */
-        $p = $this->parents;
-        $p[] = $this;
-        $np = new $class($this->client, ...$p);
-        $np->parseArgs(...$args);
-        return $np;
     }
 }

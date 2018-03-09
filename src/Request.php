@@ -38,10 +38,10 @@ class Request {
      */
     public function __construct(string $method,
                                 string $uri,
-                                array $headers = [],
-                                array $parameters = [],
-                                $body = null,
-                                bool $authenticated = true) {
+                                array $headers,
+                                array $parameters,
+                                $body,
+                                bool $authenticated) {
         $this->method = strtoupper(trim($method));
         $this->uri = trim($uri);
         $this->headers = $headers;
@@ -95,12 +95,18 @@ class Request {
         return $this->authenticated;
     }
 
-    private function validate() {
+    /**
+     * Perform suuuuuuuuper basic post-construction request validation
+     */
+    private function validate(): void {
         if (!isset(self::$methods[$this->method])) {
             throw new \InvalidArgumentException("Method \"{$this->method}\" is not valid");
         }
         if ('' === $this->uri) {
             throw new \InvalidArgumentException('uri cannot be empty');
+        }
+        if (null !== $this->body && 'GET' === $this->method) {
+            throw new \DomainException('Cannot set body with GET request.');
         }
     }
 }

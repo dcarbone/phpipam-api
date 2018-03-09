@@ -1,6 +1,6 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\User;
 
-use MyENA\PHPIPAMAPI\Part\AbstractExecutablePart;
+use MyENA\PHPIPAMAPI\AbstractPart;
 use MyENA\PHPIPAMAPI\Part\ExecutablePart;
 use MyENA\PHPIPAMAPI\Part\MethodPart;
 
@@ -8,7 +8,7 @@ use MyENA\PHPIPAMAPI\Part\MethodPart;
  * Class PATCH
  * @package MyENA\PHPIPAMAPI\Chain\User
  */
-class PATCH extends AbstractExecutablePart implements MethodPart, ExecutablePart {
+class PATCH extends AbstractPart implements MethodPart, ExecutablePart {
     const METHOD = 'PATCH';
 
     /**

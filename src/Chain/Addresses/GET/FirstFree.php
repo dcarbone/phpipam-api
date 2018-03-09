@@ -1,13 +1,14 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET;
 
-use MyENA\PHPIPAMAPI\Part\AbstractExecutablePart;
+use MyENA\PHPIPAMAPI\AbstractPart;
+use MyENA\PHPIPAMAPI\Part\ExecutablePart;
 use MyENA\PHPIPAMAPI\Part\UriPart;
 
 /**
  * Class FirstFree
  * @package MyENA\PHPIPAMAPI\Chain\Addresses\GET
  */
-class FirstFree extends AbstractExecutablePart implements UriPart {
+class FirstFree extends AbstractPart implements UriPart, ExecutablePart {
     const PATH = 'first_free/';
 
     /**

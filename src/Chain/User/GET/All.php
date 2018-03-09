@@ -1,13 +1,14 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\User\GET;
 
-use MyENA\PHPIPAMAPI\Part\AbstractExecutablePart;
+use MyENA\PHPIPAMAPI\AbstractPart;
+use MyENA\PHPIPAMAPI\Part\ExecutablePart;
 use MyENA\PHPIPAMAPI\Part\UriPart;
 
 /**
  * Class All
  * @package MyENA\PHPIPAMAPI\Chain\User\GET
  */
-class All extends AbstractExecutablePart implements UriPart {
+class All extends AbstractPart implements UriPart, ExecutablePart {
     const PATH = 'all/';
 
     /**

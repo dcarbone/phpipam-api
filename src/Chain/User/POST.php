@@ -1,16 +1,16 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\User;
 
 use MyENA\PHPIPAMAPI\AbstractPart;
-use MyENA\PHPIPAMAPI\Chain\UserController;
 use MyENA\PHPIPAMAPI\Part\ExecutablePart;
+use MyENA\PHPIPAMAPI\Part\HeaderPart;
 use MyENA\PHPIPAMAPI\Part\MethodPart;
-use MyENA\PHPIPAMAPI\Request;
+use MyENA\PHPIPAMAPI\Part\UnauthenticatedPart;
 
 /**
  * Class POST
  * @package MyENA\PHPIPAMAPI\Request\User
  */
-class POST extends AbstractPart implements MethodPart, ExecutablePart {
+class POST extends AbstractPart implements MethodPart, HeaderPart, ExecutablePart, UnauthenticatedPart {
     const METHOD = 'POST';
 
     /**
@@ -18,6 +18,18 @@ class POST extends AbstractPart implements MethodPart, ExecutablePart {
      */
     public function getRequestMethod(): string {
         return self::METHOD;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRequestHeaders(): array {
+        return [
+            'Authorization' => sprintf(
+                'Basic %s',
+                base64_encode("{$this->client->getConfig()->getUsername()}:{$this->client->getConfig()->getPassword()}")
+            ),
+        ];
     }
 
     /**
@@ -37,24 +49,5 @@ class POST extends AbstractPart implements MethodPart, ExecutablePart {
         }
 
         return POSTResponse::fromPSR7Response($resp);
-    }
-
-    /**
-     * @return \MyENA\PHPIPAMAPI\Request
-     */
-    public function buildRequest(): Request {
-        return new Request(
-            $this->findMethod(),
-            UserController::PATH,
-            [
-                'Authorization' => sprintf(
-                    'Basic %s',
-                    base64_encode("{$this->client->getConfig()->getUsername()}:{$this->client->getConfig()->getPassword()}")
-                ),
-            ],
-            [],
-            null,
-            false
-        );
     }
 }

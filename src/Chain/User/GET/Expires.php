@@ -1,13 +1,14 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\User\GET;
 
-use MyENA\PHPIPAMAPI\Part\AbstractExecutablePart;
+use MyENA\PHPIPAMAPI\AbstractPart;
+use MyENA\PHPIPAMAPI\Part\ExecutablePart;
 use MyENA\PHPIPAMAPI\Part\UriPart;
 
 /**
  * Class Expires
  * @package MyENA\PHPIPAMAPI\Chain\User\GET
  */
-class Expires extends AbstractExecutablePart implements UriPart {
+class Expires extends AbstractPart implements UriPart, ExecutablePart {
     const PATH = 'expires/';
 
     /**

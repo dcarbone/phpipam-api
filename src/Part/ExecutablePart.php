@@ -1,7 +1,5 @@
 <?php namespace MyENA\PHPIPAMAPI\Part;
 
-use MyENA\PHPIPAMAPI\Request;
-
 /**
  * Interface Executable
  * @package MyENA\PHPIPAMAPI
@@ -14,9 +12,4 @@ interface ExecutablePart {
      * )
      */
     public function execute(): array;
-
-    /**
-     * @return \MyENA\PHPIPAMAPI\Request
-     */
-    public function buildRequest(): Request;
 }

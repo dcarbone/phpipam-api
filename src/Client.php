@@ -56,12 +56,22 @@ class Client implements LoggerAwareInterface {
         $this->config = $config;
         $this->silent = $this->config->silent();
 
-        $t = $this;
-        register_shutdown_function(function() use ($t) {
-            if (isset($t->clientUserSession)) {
-                $t->User()->DELETE()->execute();
-            }
-        });
+        // TODO: is this needed in conjunction with __destruct?
+//        $t = $this;
+//        register_shutdown_function(function() use ($t) {
+//            if (isset($t->clientUserSession)) {
+//                $t->User()->DELETE()->execute();
+//            }
+//        });
+    }
+
+    /**
+     * On destruction of class, terminate session token
+     */
+    public function __destruct() {
+        if (isset($this->clientUserSession)) {
+            $this->User()->DELETE()->execute();
+        }
     }
 
     /**

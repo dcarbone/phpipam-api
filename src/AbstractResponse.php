@@ -71,9 +71,8 @@ abstract class AbstractResponse {
                         null,
                         new ResponseError(-1, sprintf(
                             'Response expected to have fields ["code","success","data","error"], saw ["%s"]',
-                            implode('","', array_keys($decoded)),
-                            $contents
-                        )),
+                            implode('","', array_keys($decoded))
+                        ), $contents),
                     ];
                 }
             } else {
@@ -81,9 +80,8 @@ abstract class AbstractResponse {
                     null,
                     new ResponseError(-1, sprintf(
                         'Response expected to be json-encoded object, saw "%s"',
-                        gettype($decoded),
-                        $contents
-                    )),
+                        gettype($decoded)
+                    ), $contents),
                 ];
             }
         } else {
@@ -91,9 +89,8 @@ abstract class AbstractResponse {
                 null,
                 new ResponseError(json_last_error(), sprintf(
                     'Response returned invalid JSON: %s',
-                    json_last_error_msg(),
-                    $contents
-                )),
+                    json_last_error_msg()
+                ), $contents),
             ];
         }
     }

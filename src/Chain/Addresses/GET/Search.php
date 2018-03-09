@@ -1,7 +1,7 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET;
 
 use MyENA\PHPIPAMAPI\AbstractPart;
-use MyENA\PHPIPAMAPI\Part\AbstractExecutablePart;
+use MyENA\PHPIPAMAPI\Chain\Addresses\GET\Search\ByIPAddress;
 use MyENA\PHPIPAMAPI\Part\UriPart;
 
 /**
@@ -16,5 +16,13 @@ class Search extends AbstractPart implements UriPart {
      */
     public function getUriPart(): string {
         return self::PATH;
+    }
+
+    /**
+     * @param string $ipAddress
+     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\Search\ByIPAddress
+     */
+    public function ByIPAddress(string $ipAddress): ByIPAddress {
+        return $this->newPart(ByIPAddress::class, ['ip_address' => $ipAddress]);
     }
 }

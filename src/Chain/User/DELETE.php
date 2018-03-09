@@ -3,14 +3,15 @@
 use MyENA\PHPIPAMAPI\AbstractPart;
 use MyENA\PHPIPAMAPI\Error\ApiError;
 use MyENA\PHPIPAMAPI\Part\ExecutablePart;
+use MyENA\PHPIPAMAPI\Part\HeaderPart;
 use MyENA\PHPIPAMAPI\Part\MethodPart;
-use MyENA\PHPIPAMAPI\Request;
+use MyENA\PHPIPAMAPI\Part\UnauthenticatedPart;
 
 /**
  * Class DELETE
  * @package MyENA\PHPIPAMAPI\Chain\User
  */
-class DELETE extends AbstractPart implements MethodPart, ExecutablePart {
+class DELETE extends AbstractPart implements MethodPart, HeaderPart, ExecutablePart, UnauthenticatedPart {
     const METHOD = 'DELETE';
 
     /**
@@ -18,6 +19,14 @@ class DELETE extends AbstractPart implements MethodPart, ExecutablePart {
      */
     public function getRequestMethod(): string {
         return self::METHOD;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRequestHeaders(): array {
+        $cs = $this->client->getClientUserSession();
+        return [PHPIPAM_TOKEN_HEADER => null === $cs ? '' : $cs->getToken()];
     }
 
     /**
@@ -41,20 +50,5 @@ class DELETE extends AbstractPart implements MethodPart, ExecutablePart {
             return [null, $err];
         }
         return DELETEResponse::fromPSR7Response($resp);
-    }
-
-    /**
-     * @return \MyENA\PHPIPAMAPI\Request
-     */
-    public function buildRequest(): Request {
-        $cs = $this->client->getClientUserSession();
-        return new Request(
-            $this->findMethod(),
-            $this->buildUri(),
-            [PHPIPAM_TOKEN_HEADER => null === $cs ? '' : $cs->getToken()],
-            [],
-            null,
-            false
-        );
     }
 }
