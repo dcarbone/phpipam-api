@@ -272,6 +272,9 @@ class ConsulConfig extends LocalConfig {
         $this->appCodeKey = trim((string)$config['appcodekey'] ?? '');
     }
 
+    /**
+     * Perform some super simple post-construct sanity checking...
+     */
     protected function validate(): void {
         if ('' === $this->serviceName && '' === $this->host && 0 === $this->port) {
             throw new \RuntimeException('servicename must be defined when host and port are not');
