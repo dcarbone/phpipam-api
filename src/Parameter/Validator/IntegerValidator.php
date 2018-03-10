@@ -4,11 +4,11 @@ use MyENA\PHPIPAMAPI\Parameter;
 use MyENA\PHPIPAMAPI\Parameter\Validator;
 
 /**
- * Class RequiredValidator
+ * Class IntegerValidator
  * @package MyENA\PHPIPAMAPI\Parameter\Validator
  */
-class RequiredValidator implements Validator {
-    const NAME = 'required';
+class IntegerValidator implements Validator {
+    const NAME = 'integer';
 
     /**
      * @return string
@@ -22,6 +22,13 @@ class RequiredValidator implements Validator {
      * @return bool
      */
     public function test(Parameter $parameter): bool {
-        return null !== $parameter->getValue();
+        $v = $parameter->getValue();
+        if (null === $v) {
+            return false;
+        }
+        if ('-' === $v[0] || '+' === $v[0]) {
+            return ctype_digit(substr($v, 1));
+        }
+        return ctype_digit($v);
     }
 }

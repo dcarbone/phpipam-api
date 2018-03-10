@@ -117,7 +117,7 @@ abstract class AbstractPart {
             if ($parent instanceof ParamPart) {
                 foreach ($parent->getParameters() as $parameter) {
                     if ($parameter->getLocation() === Parameter::IN_ROUTE) {
-                        $routeParams[$parameter->getName()] = $parameter->getEncodedValue();
+                        $routeParams[$parameter->getName()] = $parameter->getValue();
                     }
                 }
             }
@@ -131,7 +131,7 @@ abstract class AbstractPart {
         if ($this instanceof ParamPart) {
             foreach ($this->getParameters() as $parameter) {
                 if ($parameter->getLocation() === Parameter::IN_ROUTE) {
-                    $routeParams[$parameter->getName()] = $parameter->getEncodedValue();
+                    $routeParams[$parameter->getName()] = $parameter->getValue();
                 }
             }
         }

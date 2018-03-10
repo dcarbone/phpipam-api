@@ -18,13 +18,13 @@ class IPv4Validator implements Validator {
     }
 
     /**
-     * @param \MyENA\PHPIPAMAPI\Parameter $argument
+     * @param \MyENA\PHPIPAMAPI\Parameter $parameter
      * @return bool
      */
-    public function test(Parameter $argument): bool {
-        $v = $argument->getValue();
+    public function test(Parameter $parameter): bool {
+        $v = $parameter->getValue();
         if (null === $v) {
-            $v = $argument->getDefaultValue();
+            $v = $parameter->getDefaultValue();
         }
         return is_string($v) && filter_var($v, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
     }

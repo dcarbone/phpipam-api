@@ -18,10 +18,10 @@ class StringValidator implements Validator {
     }
 
     /**
-     * @param \MyENA\PHPIPAMAPI\Parameter $argument
+     * @param \MyENA\PHPIPAMAPI\Parameter $parameter
      * @return bool
      */
-    public function test(Parameter $argument): bool {
-        return is_string($argument->getValue());
+    public function test(Parameter $parameter): bool {
+        return is_string($parameter->getValue());
     }
 }

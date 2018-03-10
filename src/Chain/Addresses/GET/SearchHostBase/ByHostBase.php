@@ -1,4 +1,4 @@
-<?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET;
+<?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase;
 
 use MyENA\PHPIPAMAPI\AbstractPart;
 use MyENA\PHPIPAMAPI\Parameter;
@@ -7,11 +7,11 @@ use MyENA\PHPIPAMAPI\Part\ParamPart;
 use MyENA\PHPIPAMAPI\Part\UriPart;
 
 /**
- * Class ByID
- * @package MyENA\PHPIPAMAPI\Request\Addresses\GET
+ * Class ByHostBase
+ * @package MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase
  */
-class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
-    const PATH = '{id}/';
+class ByHostBase extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
+    const PATH = '{hostbase}/';
 
     /** @var \MyENA\PHPIPAMAPI\Parameter[] */
     private $parameters;
@@ -24,14 +24,14 @@ class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
     }
 
     /**
-     * @return \MyENA\PHPIPAMAPI\Parameter[]
+     * @return array
      */
     public function getParameters(): array {
         if (!isset($this->parameters)) {
             $this->parameters = [
-                (new Parameter('id', Parameter::IN_ROUTE))
+                (new Parameter('hostbase', Parameter::IN_ROUTE))
                     ->required()
-                    ->addValidator(Parameter\Validators::Integer()),
+                    ->addValidator(Parameter\Validators::String()),
             ];
         }
         return $this->parameters;
@@ -39,7 +39,7 @@ class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
 
     /**
      * @return array(
-     * @type \MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByIDResponse|null
+     * @type \MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase\ByHostBaseResponse|null
      * @type \MyENA\PHPIPAMAPI\Error|null
      * )
      */
@@ -50,6 +50,6 @@ class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return ByIDResponse::fromPSR7Response($resp);
+        return ByHostBaseResponse::fromPSR7Response($resp);
     }
 }

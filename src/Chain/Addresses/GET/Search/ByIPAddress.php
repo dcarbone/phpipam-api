@@ -1,7 +1,6 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET\Search;
 
 use MyENA\PHPIPAMAPI\AbstractPart;
-use MyENA\PHPIPAMAPI\Client;
 use MyENA\PHPIPAMAPI\Parameter;
 use MyENA\PHPIPAMAPI\Part\ExecutablePart;
 use MyENA\PHPIPAMAPI\Part\ParamPart;
@@ -15,22 +14,7 @@ class ByIPAddress extends AbstractPart implements UriPart, ParamPart, Executable
     const PATH = '{ip_address}/';
 
     /** @var \MyENA\PHPIPAMAPI\Parameter[] */
-    private $parameters = [];
-
-    /**
-     * ByIPAddress constructor.
-     * @param \MyENA\PHPIPAMAPI\Client $client
-     * @param \MyENA\PHPIPAMAPI\AbstractPart[] ...$parents
-     */
-    public function __construct(Client $client, AbstractPart ...$parents) {
-        parent::__construct($client, ...$parents);
-        $this->parameters = [
-            (new Parameter('ip_address', Parameter::IN_ROUTE))
-                ->required()
-                ->addValidator(Parameter\Validators::String())
-                ->addValidator(Parameter\Validators::IPv4()),
-        ];
-    }
+    private $parameters;
 
     /**
      * @return string
@@ -43,6 +27,14 @@ class ByIPAddress extends AbstractPart implements UriPart, ParamPart, Executable
      * @return array
      */
     public function getParameters(): array {
+        if (!isset($this->parameters)) {
+            $this->parameters = [
+                (new Parameter('ip_address', Parameter::IN_ROUTE))
+                    ->required()
+                    ->addValidator(Parameter\Validators::String())
+                    ->addValidator(Parameter\Validators::IPv4()),
+            ];
+        }
         return $this->parameters;
     }
 

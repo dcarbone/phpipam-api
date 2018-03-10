@@ -4,6 +4,7 @@ use MyENA\PHPIPAMAPI\AbstractPart;
 use MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByID;
 use MyENA\PHPIPAMAPI\Chain\Addresses\GET\FirstFree;
 use MyENA\PHPIPAMAPI\Chain\Addresses\GET\Search;
+use MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase;
 use MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostname;
 use MyENA\PHPIPAMAPI\Part\MethodPart;
 
@@ -22,11 +23,11 @@ class GET extends AbstractPart implements MethodPart {
     }
 
     /**
-     * @param string $id
+     * @param int $id
      * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByID
      */
-    public function ByID(string $id): ByID {
-        return $this->newPart(ByID::class, $id);
+    public function ByID(int $id): ByID {
+        return $this->newPart(ByID::class, ['id' => $id]);
     }
 
     /**
@@ -41,6 +42,13 @@ class GET extends AbstractPart implements MethodPart {
      */
     public function SearchHostname(): SearchHostname {
         return $this->newPart(SearchHostname::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase
+     */
+    public function SearchHostBase(): SearchHostBase {
+        return $this->newPart(SearchHostBase::class);
     }
 
     /**

@@ -14,21 +14,7 @@ class ByHostname extends AbstractPart implements UriPart, ParamPart, ExecutableP
     const PATH = '{hostname}/';
 
     /** @var \MyENA\PHPIPAMAPI\Parameter[] */
-    private $parameters = [];
-
-    /**
-     * SearchHostname constructor.
-     * @param \MyENA\PHPIPAMAPI\Client $client
-     * @param \MyENA\PHPIPAMAPI\AbstractPart[] ...$parents
-     */
-    public function __construct(\MyENA\PHPIPAMAPI\Client $client, AbstractPart ...$parents) {
-        parent::__construct($client, ...$parents);
-        $this->parameters = [
-            (new Parameter('hostname', Parameter::IN_ROUTE))
-                ->required()
-                ->addValidator(Parameter\Validators::String()),
-        ];
-    }
+    private $parameters;
 
     /**
      * @return string
@@ -38,9 +24,16 @@ class ByHostname extends AbstractPart implements UriPart, ParamPart, ExecutableP
     }
 
     /**
-     * @return array
+     * @return \MyENA\PHPIPAMAPI\Parameter[]
      */
     public function getParameters(): array {
+        if (!isset($this->parameters)) {
+            $this->parameters = [
+                (new Parameter('hostname', Parameter::IN_ROUTE))
+                    ->required()
+                    ->addValidator(Parameter\Validators::String()),
+            ];
+        }
         return $this->parameters;
     }
 

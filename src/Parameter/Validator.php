@@ -17,8 +17,8 @@ interface Validator {
     /**
      * Performs validity check on provided argument
      *
-     * @param \MyENA\PHPIPAMAPI\Parameter $argument
+     * @param \MyENA\PHPIPAMAPI\Parameter $parameter
      * @return bool
      */
-    public function test(Parameter $argument): bool;
+    public function test(Parameter $parameter): bool;
 }

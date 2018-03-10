@@ -106,17 +106,6 @@ class Parameter {
     }
 
     /**
-     * @return string
-     */
-    public function getEncodedValue(): ?string {
-        if (null === ($v = $this->getValue())) {
-            return null;
-        } else {
-            return urlencode($v);
-        }
-    }
-
-    /**
      * Sets a default value for this argument
      *
      * @param mixed $defaultValue

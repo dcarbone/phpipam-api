@@ -1,5 +1,6 @@
 <?php namespace MyENA\PHPIPAMAPI\Parameter;
 
+use MyENA\PHPIPAMAPI\Parameter\Validator\IntegerValidator;
 use MyENA\PHPIPAMAPI\Parameter\Validator\IPv4Validator;
 use MyENA\PHPIPAMAPI\Parameter\Validator\RequiredValidator;
 use MyENA\PHPIPAMAPI\Parameter\Validator\StringValidator;
@@ -14,6 +15,8 @@ abstract class Validators {
 
     /** @var \MyENA\PHPIPAMAPI\Parameter\Validator\StringValidator */
     private static $string;
+    /** @var \MyENA\PHPIPAMAPI\Parameter\Validator\IntegerValidator */
+    private static $integer;
 
     /** @var \MyENA\PHPIPAMAPI\Parameter\Validator\IPv4Validator */
     private static $ipv4;
@@ -36,6 +39,16 @@ abstract class Validators {
             self::$string = new StringValidator();
         }
         return self::$string;
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Parameter\Validator\IntegerValidator
+     */
+    public static function Integer(): IntegerValidator {
+        if (!isset(self::$integer)) {
+            self::$integer = new IntegerValidator();
+        }
+        return self::$integer;
     }
 
     /**
