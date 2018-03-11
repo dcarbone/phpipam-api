@@ -283,7 +283,7 @@ class ConsulConfig extends LocalConfig {
             throw new \DomainException('defined host and port will be overridden by value from configured Consul service');
         }
         if (null !== $this->queryOptions &&
-            !(is_object($this->queryOptions || $this->queryOptions instanceof QueryOptions))) {
+            !(is_object($this->queryOptions) || $this->queryOptions instanceof QueryOptions)) {
             throw new \RuntimeException('queryoptions must be null, an array to construct a QueryOptions class with, or an instance of QueryOptions');
         }
         if ('' === $this->username && '' === $this->usernameKey) {
