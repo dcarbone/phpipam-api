@@ -79,3 +79,18 @@ the various Controllers and the development state:
 |[User](./src/Chain/UserController.php)|Full|
 |[Vlans](./src/Chain/VlansController.php)|
 |[Vrfs](./src/Chain/VrfsController.php)|
+
+### General Usage
+
+All operations follow the same basic flow:
+
+```php
+$client->Controller()->METHOD()->Action()->execute();
+```
+
+There are some Controller's whose `METHOD` is also directly executable (
+`$client->User()->GET()->execute()`, for example)
+
+Every step in that chain is a `Part`, and only parts that implement the
+[ExecutablePart](./src/Part/ExecutablePart.php) interface will carry the
+`execute` method.
