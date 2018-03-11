@@ -1,5 +1,5 @@
 {
-  "name": "ena/phpipam-api",
+  "name": "myena/phpipam-api",
   "description": "PHPIPAM SDK",
   "type": "library",
   "license": "MPL-2.0",
