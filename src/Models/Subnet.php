@@ -200,14 +200,14 @@ class Subnet extends AbstractModel {
     /**
      * @return int|null
      */
-    public function getisFolder(): ?int {
+    public function getIsFolder(): ?int {
         return $this->isFolder;
     }
 
     /**
      * @return int|null
      */
-    public function getisFull(): ?int {
+    public function getIsFull(): ?int {
         return $this->isFull;
     }
 

@@ -81,7 +81,7 @@ class IPAddress extends AbstractModel {
     /**
      * @return int|null
      */
-    public function getisGateway(): ?int {
+    public function getIsGateway(): ?int {
         return $this->is_gateway;
     }
 

@@ -18,28 +18,28 @@ class UserController extends AbstractPart implements UriPart {
      * @return \MyENA\PHPIPAMAPI\Chain\User\GET
      */
     public function GET(): GET {
-        return new GET($this->client, $this);
+        return $this->newPart(GET::class);
     }
 
     /**
      * @return \MyENA\PHPIPAMAPI\Chain\User\POST
      */
     public function POST(): POST {
-        return new POST($this->client, $this);
+        return $this->newPart(POST::class);
     }
 
     /**
      * @return \MyENA\PHPIPAMAPI\Chain\User\PATCH
      */
     public function PATCH(): PATCH {
-        return new PATCH($this->client, $this);
+        return $this->newPart(PATCH::class);
     }
 
     /**
      * @return \MyENA\PHPIPAMAPI\Chain\User\DELETE
      */
     public function DELETE(): DELETE {
-        return new DELETE($this->client, $this);
+        return $this->newPart(DELETE::class);
     }
 
     /**

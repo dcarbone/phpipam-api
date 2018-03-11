@@ -4,7 +4,7 @@ SDK for consuming from PHP-IPAM's API
 
 ## Configuration
 
-To create a [Client](src/Client.php), you must first construct something that implements 
+To create a [Client](src/Client.php), you must first construct something that implements
 [ConfigProvider](src/Config/ConfigProvider.php).  Two implementations are included:
 
 ### Standard Configuration
@@ -15,12 +15,12 @@ If you have all your PHP IPAM configuration details local to your application yo
 ```php
 $conf = [
     // Required Parameters
-    'host'      => 'service host', 
+    'host'      => 'service host',
     'username'  => 'bilbo-swaggins',
     'password'  => 'swaggerific',
     'appid'     => 'whatever',
     'appcode'   => 'crypticwhatever',
-    
+
     // Optional Parameters
     'https'     => true,            // defaults to true
     'port'      => 0,               // recommended to set only if you don't use standard 80 / 443,
@@ -34,7 +34,7 @@ $config = new \ENA\PHPIPAM\Config\Config($conf);
 If you have a [Consul](https://www.consul.io/) setup going and have your PHPIPAM service registered with it, or use its
 KV store for other config items, you may use the [ConsulConfig](src/Config/ConsulConfig.php) class.  This config uses
 [PHPConsulAPI](https://github.com/dcarbone/php-consul-api) for Consul interaction.  It accepts all
-of the same parameters as the standard [LocalConfig](src/Config/LocalConfig.php) class, with the following additional 
+of the same parameters as the standard [LocalConfig](src/Config/LocalConfig.php) class, with the following additional
 Consul-specific ones:
 
 Parameters:
@@ -51,13 +51,31 @@ $consulConf = $conf + [
 ];
 ```
 
-This class accepts an optional 3rd argument of an instance of 
+This class accepts an optional 3rd argument of an instance of
 [Consul](https://github.com/dcarbone/php-consul-api/blob/master/src/Consul.php).  If this is not defined, a new instance
 will be created using default config values.
 
 ### HTTP Client
 
-Both config classes take an optional 2nd argument of any class implementing 
+Both config classes take an optional 2nd argument of any class implementing
 [GuzzleHttp ClientInterface](https://github.com/guzzle/guzzle/blob/6.3.0/src/ClientInterface.php).  If this is not
 defined, a new instance of [GuzzleHttp Client](https://github.com/guzzle/guzzle/blob/6.3.0/src/Client.php) will be used.
- 
+
+### Under Development
+
+This library is still under active development.  Below is a table of
+the various Controllers and the development state:
+
+|Controller|State|
+|---|---|
+|[Addresses](./src/Chain/AddressesController.php)|Partial|
+|[Circuits](./src/Chain/CircuitsController.php)|
+|[Devices](./src/Chain/DevicesController.php)|
+|[L2Domains](./src/Chain/L2DomainsController.php)|
+|[Prefix](./src/Chain/PrefixController.php)|
+|[Sections](./src/Chain/SectionsController.php)|
+|[Subnets](./src/Chain/SubnetsController.php)|
+|[Tools](./src/Chain/ToolsController.php)|
+|[User](./src/Chain/UserController.php)|Full|
+|[Vlans](./src/Chain/VlansController.php)|
+|[Vrfs](./src/Chain/VrfsController.php)|

@@ -6,7 +6,16 @@ use GuzzleHttp\Psr7\Request as PSR7Request;
 use GuzzleHttp\Psr7\Uri as PSR7Uri;
 use GuzzleHttp\RequestOptions;
 use MyENA\PHPIPAMAPI\Chain\AddressesController;
+use MyENA\PHPIPAMAPI\Chain\CircuitsController;
+use MyENA\PHPIPAMAPI\Chain\DevicesController;
+use MyENA\PHPIPAMAPI\Chain\L2DomainsController;
+use MyENA\PHPIPAMAPI\Chain\PrefixController;
+use MyENA\PHPIPAMAPI\Chain\SectionsController;
+use MyENA\PHPIPAMAPI\Chain\SubnetsController;
+use MyENA\PHPIPAMAPI\Chain\ToolsController;
 use MyENA\PHPIPAMAPI\Chain\UserController;
+use MyENA\PHPIPAMAPI\Chain\VlansController;
+use MyENA\PHPIPAMAPI\Chain\VrfsController;
 use MyENA\PHPIPAMAPI\Error\ApiError;
 use MyENA\PHPIPAMAPI\Error\TransportError;
 use MyENA\PHPIPAMAPI\Models\UserSession;
@@ -78,14 +87,77 @@ class Client implements LoggerAwareInterface {
      * @return \MyENA\PHPIPAMAPI\Chain\AddressesController
      */
     public function Addresses(): AddressesController {
-        return new AddressesController($this);
+        return new AddressesController($this, $this->logger);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\CircuitsController
+     */
+    public function Circuits(): CircuitsController {
+        return new CircuitsController($this, $this->logger);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\DevicesController
+     */
+    public function Devices(): DevicesController {
+        return new DevicesController($this, $this->logger);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\L2DomainsController
+     */
+    public function L2Domains(): L2DomainsController {
+        return new L2DomainsController($this, $this->logger);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\PrefixController
+     */
+    public function Prefix(): PrefixController {
+        return new PrefixController($this, $this->logger);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\SectionsController
+     */
+    public function Sections(): SectionsController {
+        return new SectionsController($this, $this->logger);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\SubnetsController
+     */
+    public function Subnets(): SubnetsController {
+        return new SubnetsController($this, $this->logger);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\ToolsController
+     */
+    public function ToolsController(): ToolsController {
+        return new ToolsController($this, $this->logger);
     }
 
     /**
      * @return \MyENA\PHPIPAMAPI\Chain\UserController
      */
     public function User(): UserController {
-        return new UserController($this);
+        return new UserController($this, $this->logger);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\VlansController
+     */
+    public function Vlans(): VlansController {
+        return new VlansController($this, $this->logger);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\VrfsController
+     */
+    public function Vrfs(): VrfsController {
+        return new VrfsController($this, $this->logger);
     }
 
     /**

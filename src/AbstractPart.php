@@ -7,6 +7,10 @@ use MyENA\PHPIPAMAPI\Part\MethodPart;
 use MyENA\PHPIPAMAPI\Part\ParamPart;
 use MyENA\PHPIPAMAPI\Part\UnauthenticatedPart;
 use MyENA\PHPIPAMAPI\Part\UriPart;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * TODO: Improve efficiency of parameter handling
@@ -14,7 +18,10 @@ use MyENA\PHPIPAMAPI\Part\UriPart;
  * Class AbstractPart
  * @package MyENA\PHPIPAMAPI
  */
-abstract class AbstractPart {
+abstract class AbstractPart implements LoggerAwareInterface {
+
+    use LoggerAwareTrait;
+
     /** @var \MyENA\PHPIPAMAPI\Client */
     protected $client;
     /** @var \MyENA\PHPIPAMAPI\AbstractPart[] */
@@ -22,12 +29,17 @@ abstract class AbstractPart {
 
     /**
      * AbstractPart constructor.
-     * @param \MyENA\PHPIPAMAPI\Client $client
+     * @param \MyENA\PHPIPAMAPI\Client         $client
+     * @param \Psr\Log\LoggerInterface         $logger
      * @param \MyENA\PHPIPAMAPI\AbstractPart[] ...$parents
      */
-    public function __construct(Client $client, AbstractPart ...$parents) {
+    public function __construct(Client $client, LoggerInterface $logger, AbstractPart ...$parents) {
         $this->client = $client;
         $this->parents = $parents;
+        if (null === $logger) {
+            $logger = new NullLogger();
+        }
+        $this->logger = $logger;
     }
 
     /**
@@ -75,7 +87,7 @@ abstract class AbstractPart {
         /** @var \MyENA\PHPIPAMAPI\AbstractPart $np */
         $p = $this->parents;
         $p[] = $this;
-        $np = new $class($this->client, ...$p);
+        $np = new $class($this->client, $this->logger, ...$p);
         if ($np instanceof ParamPart) {
             $np->parseParameters($np, $parameters);
         } else if (0 !== ($cnt = count($parameters))) {
@@ -164,7 +176,7 @@ abstract class AbstractPart {
         }
         return array_filter(
             $queryParams,
-            function($v) {
+            function ($v) {
                 return null !== $v;
             }
         );
