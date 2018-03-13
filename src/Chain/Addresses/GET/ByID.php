@@ -1,6 +1,7 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET;
 
 use MyENA\PHPIPAMAPI\AbstractPart;
+use MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByID\Ping;
 use MyENA\PHPIPAMAPI\Parameter;
 use MyENA\PHPIPAMAPI\Part\ExecutablePart;
 use MyENA\PHPIPAMAPI\Part\ParamPart;
@@ -51,5 +52,12 @@ class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
             return [null, $err];
         }
         return ByIDResponse::fromPSR7Response($resp);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByID\Ping
+     */
+    public function Ping(): Ping {
+        return $this->newPart(Ping::class);
     }
 }
