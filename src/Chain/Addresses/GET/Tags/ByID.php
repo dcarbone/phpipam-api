@@ -1,20 +1,28 @@
-<?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase;
+<?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET\Tags;
 
 use MyENA\PHPIPAMAPI\AbstractPart;
+use MyENA\PHPIPAMAPI\Chain\Addresses\GET\Tags\ByID\Addresses;
 use MyENA\PHPIPAMAPI\Parameter;
 use MyENA\PHPIPAMAPI\Part\ExecutablePart;
 use MyENA\PHPIPAMAPI\Part\ParamPart;
 use MyENA\PHPIPAMAPI\Part\UriPart;
 
 /**
- * Class ByHostBase
- * @package MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase
+ * Class ByID
+ * @package MyENA\PHPIPAMAPI\Chain\Addresses\GET\Tags
  */
-class ByHostBase extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
-    const PATH = '{hostbase}/';
+class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
+    const PATH = '{id}/';
 
     /** @var \MyENA\PHPIPAMAPI\Parameter[] */
     private $parameters;
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\Tags\ByID\Addresses
+     */
+    public function Addresses(): Addresses {
+        return $this->newPart(Addresses::class);
+    }
 
     /**
      * @return string
@@ -29,9 +37,9 @@ class ByHostBase extends AbstractPart implements UriPart, ParamPart, ExecutableP
     public function getParameters(): array {
         if (!isset($this->parameters)) {
             $this->parameters = [
-                (new Parameter('hostbase', Parameter::IN_ROUTE))
-                    ->required()
-                    ->addValidator(Parameter\Validators::String()),
+                (new Parameter('id', Parameter::IN_ROUTE))
+                ->required()
+                ->addValidator(Parameter\Validators::Integer())
             ];
         }
         return $this->parameters;
@@ -39,7 +47,7 @@ class ByHostBase extends AbstractPart implements UriPart, ParamPart, ExecutableP
 
     /**
      * @return array(
-     * @type \MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase\ByHostBaseResponse|null
+     * @type \MyENA\PHPIPAMAPI\Chain\Addresses\GET\Tags\ByIDResponse|null
      * @type \MyENA\PHPIPAMAPI\Error|null
      * )
      */
@@ -50,6 +58,6 @@ class ByHostBase extends AbstractPart implements UriPart, ParamPart, ExecutableP
         if (null !== $err) {
             return [null, $err];
         }
-        return ByHostBaseResponse::fromPSR7Response($resp);
+        return ByIDResponse::fromPSR7Response($resp);
     }
 }

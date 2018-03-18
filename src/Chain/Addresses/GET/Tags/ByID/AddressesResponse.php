@@ -1,19 +1,19 @@
-<?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase;
+<?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET\Tags\ByID;
 
 use MyENA\PHPIPAMAPI\AbstractResponse;
 use MyENA\PHPIPAMAPI\Models\IPAddress;
 
 /**
- * Class ByHostBaseResponse
- * @package MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase
+ * Class AddressesResponse
+ * @package MyENA\PHPIPAMAPI\Chain\Addresses\GET\Tags\ByID
  */
-class ByHostBaseResponse extends AbstractResponse {
+class AddressesResponse extends AbstractResponse {
     /**
      * @param mixed $data
      */
     protected function parseData($data): void {
         $this->data = [];
-        foreach ($data as $datum) {
+        foreach($data as $datum) {
             $this->data[] = new IPAddress($datum);
         }
     }

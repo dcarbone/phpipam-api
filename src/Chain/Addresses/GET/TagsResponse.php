@@ -1,25 +1,25 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET;
 
 use MyENA\PHPIPAMAPI\AbstractResponse;
-use MyENA\PHPIPAMAPI\Models\IPAddress;
+use MyENA\PHPIPAMAPI\Models\IPTag;
 
 /**
- * Class FirstFreeResponse
+ * Class TagsResponse
  * @package MyENA\PHPIPAMAPI\Chain\Addresses\GET
  */
-class FirstFreeResponse extends AbstractResponse {
+class TagsResponse extends AbstractResponse {
     /**
      * @param mixed $data
      */
     protected function parseData($data): void {
         $this->data = [];
         foreach ($data as $datum) {
-            $this->data[] = new IPAddress($datum);
+            $this->data[] = new IPTag($datum);
         }
     }
 
     /**
-     * @return \MyENA\PHPIPAMAPI\Models\IPAddress[]
+     * @return \MyENA\PHPIPAMAPI\Models\IPTag[]
      */
     public function getData(): array {
         return $this->data ?? [];

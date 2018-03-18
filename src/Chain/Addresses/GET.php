@@ -2,10 +2,12 @@
 
 use MyENA\PHPIPAMAPI\AbstractPart;
 use MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByID;
+use MyENA\PHPIPAMAPI\Chain\Addresses\GET\CustomFields;
 use MyENA\PHPIPAMAPI\Chain\Addresses\GET\FirstFree;
 use MyENA\PHPIPAMAPI\Chain\Addresses\GET\Search;
 use MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostBase;
 use MyENA\PHPIPAMAPI\Chain\Addresses\GET\SearchHostname;
+use MyENA\PHPIPAMAPI\Chain\Addresses\GET\Tags;
 use MyENA\PHPIPAMAPI\Part\MethodPart;
 
 /**
@@ -56,5 +58,19 @@ class GET extends AbstractPart implements MethodPart {
      */
     public function FirstFree(): FirstFree {
         return $this->newPart(FirstFree::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\CustomFields
+     */
+    public function CustomFields(): CustomFields {
+        return $this->newPart(CustomFields::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\Tags
+     */
+    public function Tags(): Tags {
+        return $this->newPart(Tags::class);
     }
 }

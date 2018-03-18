@@ -22,6 +22,6 @@ class ByIPAddressResponse extends AbstractResponse {
      * @return \MyENA\PHPIPAMAPI\Models\IPAddress[]
      */
     public function getData(): array {
-        return $this->data;
+        return $this->data ?? [];
     }
 }
