@@ -48,6 +48,6 @@ class POST extends AbstractPart implements MethodPart, HeaderPart, ExecutablePar
             return [null, $err];
         }
 
-        return POSTResponse::fromPSR7Response($resp);
+        return POSTResponse::fromPSR7Response($resp, $this->logger);
     }
 }

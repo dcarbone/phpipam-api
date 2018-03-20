@@ -50,6 +50,6 @@ class ByHostname extends AbstractPart implements UriPart, ParamPart, ExecutableP
         if (null !== $err) {
             return [null, $err];
         }
-        return ByHostnameResponse::fromPSR7Response($resp);
+        return ByHostnameResponse::fromPSR7Response($resp, $this->logger);
     }
 }

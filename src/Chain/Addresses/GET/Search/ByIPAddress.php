@@ -51,6 +51,6 @@ class ByIPAddress extends AbstractPart implements UriPart, ParamPart, Executable
         if (null !== $err) {
             return [null, $err];
         }
-        return ByIPAddressResponse::fromPSR7Response($resp);
+        return ByIPAddressResponse::fromPSR7Response($resp, $this->logger);
     }
 }

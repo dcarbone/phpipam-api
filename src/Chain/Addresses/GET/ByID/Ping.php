@@ -25,6 +25,6 @@ class Ping extends AbstractPart implements UriPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return PingResponse::fromPSR7Response($resp);
+        return PingResponse::fromPSR7Response($resp, $this->logger);
     }
 }

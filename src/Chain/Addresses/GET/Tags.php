@@ -40,6 +40,6 @@ class Tags extends AbstractPart implements UriPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return TagsResponse::fromPSR7Response($resp);
+        return TagsResponse::fromPSR7Response($resp, $this->logger);
     }
 }

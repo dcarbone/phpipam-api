@@ -31,6 +31,6 @@ class All extends AbstractPart implements UriPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return AllResponse::fromPSR7Response($resp);
+        return AllResponse::fromPSR7Response($resp, $this->logger);
     }
 }

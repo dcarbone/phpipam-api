@@ -31,6 +31,6 @@ class FirstFree extends AbstractPart implements UriPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return FirstFreeResponse::fromPSR7Response($resp);
+        return FirstFreeResponse::fromPSR7Response($resp, $this->logger);
     }
 }

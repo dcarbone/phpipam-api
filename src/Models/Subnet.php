@@ -1,12 +1,12 @@
 <?php namespace MyENA\PHPIPAMAPI\Models;
-
-use MyENA\PHPIPAMAPI\AbstractModel;
+use DCarbone\Go\Time;
+use MyENA\PHPIPAMAPI\Models\Subnet\Calculation;
 
 /**
  * Class Subnet
  * @package MyENA\PHPIPAMAPI\Models
  */
-class Subnet extends AbstractModel {
+class Subnet extends AbstractModelWithCustomFields {
     /** @var int|null */
     protected $id = 0;
     /** @var string|null */
@@ -38,7 +38,7 @@ class Subnet extends AbstractModel {
     /** @var int|null */
     protected $DNSrecursive = 0;
     /** @var int|null */
-    protected $DNSrescords = 0;
+    protected $DNSrecords = 0;
     /** @var int|null */
     protected $nameserverId = 0;
     /** @var int|null */
@@ -59,6 +59,16 @@ class Subnet extends AbstractModel {
     protected $lastScan = null;
     /** @var \DCarbone\Go\Time\Time|null */
     protected $lastDiscovery = null;
+    /** @var string|null */
+    protected $masterSubnetId = '';
+    /** @var string|null */
+    protected $allowRequests = '';
+    /** @var string|null */
+    protected $vlanId = '';
+    /** @var string|null */
+    protected $tag = '';
+    /** @var \MyENA\PHPIPAMAPI\Models\Subnet\Calculation|null */
+    protected $calculation = null;
 
     /**
      * Subnet constructor.
@@ -69,6 +79,9 @@ class Subnet extends AbstractModel {
         $this->editDate = $this->unmarshalDate($this->editDate);
         $this->lastScan = $this->unmarshalDate($this->lastScan);
         $this->lastDiscovery = $this->unmarshalDate($this->lastDiscovery);
+        if (isset($this->calculation)) {
+            $this->calculation = new Calculation($this->calculation);
+        }
     }
 
     /**
@@ -179,8 +192,8 @@ class Subnet extends AbstractModel {
     /**
      * @return int|null
      */
-    public function getDNSrescords(): ?int {
-        return $this->DNSrescords;
+    public function getDNSrecords(): ?int {
+        return $this->DNSrecords;
     }
 
     /**
@@ -235,22 +248,57 @@ class Subnet extends AbstractModel {
     /**
      * @return \DCarbone\Go\Time\Time|null
      */
-    public function getEditDate(): ?\DCarbone\Go\Time\Time {
+    public function getEditDate(): ?Time\Time {
         return $this->editDate;
     }
 
     /**
      * @return \DCarbone\Go\Time\Time|null
      */
-    public function getLastScan(): ?\DCarbone\Go\Time\Time {
+    public function getLastScan(): ?Time\Time {
         return $this->lastScan;
     }
 
     /**
      * @return \DCarbone\Go\Time\Time|null
      */
-    public function getLastDiscovery(): ?\DCarbone\Go\Time\Time {
+    public function getLastDiscovery(): ?Time\Time {
         return $this->lastDiscovery;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getMasterSubnetId(): ?string {
+        return $this->masterSubnetId;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getAllowRequests(): ?string {
+        return $this->allowRequests;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getVlanId(): ?string {
+        return $this->vlanId;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getTag(): ?string {
+        return $this->tag;
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Models\Subnet\Calculation|null
+     */
+    public function getCalculation(): ?Subnet\Calculation {
+        return $this->calculation;
     }
 
     /**

@@ -13,7 +13,11 @@ abstract class AbstractModel implements \JsonSerializable {
      */
     public function __construct(array $data = []) {
         foreach ($data as $k => $v) {
-            $this->{$k} = $v;
+            if (false !== strpos($k, ' ')) {
+                $this->{str_replace(' ', '_', $k)} = $v;
+            } else {
+                $this->{$k} = $v;
+            }
         }
     }
 

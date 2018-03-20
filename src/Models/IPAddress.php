@@ -1,13 +1,12 @@
 <?php namespace MyENA\PHPIPAMAPI\Models;
 
 use DCarbone\Go\Time;
-use MyENA\PHPIPAMAPI\AbstractModel;
 
 /**
  * Class IPAddress
  * @package MyENA\PHPIPAMAPI\Models
  */
-class IPAddress extends AbstractModel {
+class IPAddress extends AbstractModelWithCustomFields {
     /** @var int|null */
     protected $id = 0;
     /** @var int|null */
@@ -39,13 +38,19 @@ class IPAddress extends AbstractModel {
     /** @var int|null */
     protected $excludePing = 0;
     /** @var int|null */
-    protected $PTRIgnore = 0;
+    protected $PTRignore = 0;
     /** @var int|null */
     protected $PTR = 0;
     /** @var string|null */
     protected $firewallAddressObject = '';
     /** @var \DCarbone\Go\Time\Time|null */
     protected $editDate = null;
+    /** @var string|null */
+    protected $ip = '';
+    /** @var string|null */
+    protected $tag = '';
+    /** @var string|null */
+    protected $deviceId = '';
 
     /**
      * IPAddress constructor.
@@ -81,7 +86,7 @@ class IPAddress extends AbstractModel {
     /**
      * @return int|null
      */
-    public function getIsGateway(): ?int {
+    public function getisGateway(): ?int {
         return $this->is_gateway;
     }
 
@@ -165,8 +170,8 @@ class IPAddress extends AbstractModel {
     /**
      * @return int|null
      */
-    public function getPTRIgnore(): ?int {
-        return $this->PTRIgnore;
+    public function getPTRignore(): ?int {
+        return $this->PTRignore;
     }
 
     /**
@@ -190,6 +195,26 @@ class IPAddress extends AbstractModel {
         return $this->editDate;
     }
 
+    /**
+     * @return null|string
+     */
+    public function getIp(): ?string {
+        return $this->ip;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getTag(): ?string {
+        return $this->tag;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getDeviceId(): ?string {
+        return $this->deviceId;
+    }
     /**
      * @return array
      */

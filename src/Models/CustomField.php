@@ -1,62 +1,76 @@
 <?php namespace MyENA\PHPIPAMAPI\Models;
 
-use MyENA\PHPIPAMAPI\AbstractModel;
-
 /**
  * Class CustomField
  * @package MyENA\PHPIPAMAPI\Models
  */
-class CustomField extends AbstractModel {
-    /** @var string|null */
-    protected $name = '';
-    /** @var string|null */
-    protected $type = '';
-    /** @var string|null */
-    protected $Comment = '';
-    /** @var string|null */
-    protected $Null = '';
-    /** @var mixed  */
-    protected $Default = null;
+class CustomField implements \JsonSerializable {
+    /** @var string */
+    protected $name;
+    /** @var mixed */
+    protected $value;
 
     /**
-     * @return null|string
+     * CustomField constructor.
+     * @param string $name
+     * @param null $value
      */
-    public function getName(): ?string {
+    public function __construct(string $name, $value = null) {
+        $this->name = $name;
+        $this->value = $value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string {
         return $this->name;
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getType(): ?string {
-        return $this->type;
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getComment(): ?string {
-        return $this->Comment;
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getNull(): ?string {
-        return $this->Null;
     }
 
     /**
      * @return mixed
      */
-    public function getDefault() {
-        return $this->Default;
+    public function getValue() {
+        return $this->value;
     }
 
     /**
-     * @return array
+     * @return bool
+     */
+    public function isNull(): bool {
+        return null === $this->getValue();
+    }
+
+    /**
+     * TODO: is this sufficient?
+     *
+     * @return string
+     */
+    public function __toString() {
+        switch(gettype(($value = $this->getValue()))){
+            case 'string':
+            case 'integer':
+            case 'double':
+                return (string)$value;
+            case 'object':
+                if (method_exists($value, '__toString')) {
+                    return (string)$value;
+                }
+                return get_class($value);
+            case 'array':
+                return 'Array['.count($value).']';
+            case 'resource':
+                return 'Resource(#'.(int)$value.')';
+
+            default:
+                return 'NULL';
+        }
+    }
+
+    /**
+     * @return mixed
      */
     public function jsonSerialize() {
-        return get_object_vars($this);
+        return $this->getValue();
     }
 }

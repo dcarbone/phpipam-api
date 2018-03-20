@@ -1,7 +1,6 @@
-<?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET;
+<?php namespace MyENA\PHPIPAMAPI\Chain\Subnets\GET;
 
 use MyENA\PHPIPAMAPI\AbstractPart;
-use MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByID\Ping;
 use MyENA\PHPIPAMAPI\Parameter;
 use MyENA\PHPIPAMAPI\Part\ExecutablePart;
 use MyENA\PHPIPAMAPI\Part\ParamPart;
@@ -9,7 +8,7 @@ use MyENA\PHPIPAMAPI\Part\UriPart;
 
 /**
  * Class ByID
- * @package MyENA\PHPIPAMAPI\Request\Addresses\GET
+ * @package MyENA\PHPIPAMAPI\Chain\Subnets\GET
  */
 class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
     const PATH = '{id}/';
@@ -40,7 +39,7 @@ class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
 
     /**
      * @return array(
-     * @type \MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByIDResponse|null
+     * @type \MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByIDResponse|null
      * @type \MyENA\PHPIPAMAPI\Error|null
      * )
      */
@@ -52,12 +51,5 @@ class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
             return [null, $err];
         }
         return ByIDResponse::fromPSR7Response($resp, $this->logger);
-    }
-
-    /**
-     * @return \MyENA\PHPIPAMAPI\Chain\Addresses\GET\ByID\Ping
-     */
-    public function Ping(): Ping {
-        return $this->newPart(Ping::class);
     }
 }

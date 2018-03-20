@@ -1,13 +1,12 @@
 <?php namespace MyENA\PHPIPAMAPI\Models;
 
 use DCarbone\Go\Time;
-use MyENA\PHPIPAMAPI\AbstractModel;
 
 /**
  * Class VLAN
  * @package MyENA\PHPIPAMAPI\Models
  */
-class VLAN extends AbstractModel {
+class VLAN extends AbstractModelWithCustomFields {
     /** @var int|null */
     protected $vlanId = 0;
     /** @var int|null */

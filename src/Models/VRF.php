@@ -1,12 +1,10 @@
 <?php namespace MyENA\PHPIPAMAPI\Models;
 
-use MyENA\PHPIPAMAPI\AbstractModel;
-
 /**
  * Class VRF
  * @package MyENA\PHPIPAMAPI\Models
  */
-class VRF extends AbstractModel {
+class VRF extends AbstractModelWithCustomFields {
     /** @var int|null */
     protected $vrfId = 0;
     /** @var string|null */

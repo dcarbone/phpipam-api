@@ -1,13 +1,12 @@
 <?php namespace MyENA\PHPIPAMAPI\Models;
 
 use DCarbone\Go\Time;
-use MyENA\PHPIPAMAPI\AbstractModel;
 
 /**
  * Class Device
  * @package MyENA\PHPIPAMAPI\Models
  */
-class Device extends AbstractModel {
+class Device extends AbstractModelWithCustomFields {
     /** @var int|null */
     protected $id = 0;
     /** @var string|null */

@@ -31,6 +31,6 @@ class TokenExpires extends AbstractPart implements UriPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return TokenExpiresResponse::fromPSR7Response($resp);
+        return TokenExpiresResponse::fromPSR7Response($resp, $this->logger);
     }
 }

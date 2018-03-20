@@ -31,6 +31,6 @@ class Admins extends AbstractPart implements UriPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return AdminsResponse::fromPSR7Response($resp);
+        return AdminsResponse::fromPSR7Response($resp, $this->logger);
     }
 }

@@ -58,6 +58,6 @@ class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return ByIDResponse::fromPSR7Response($resp);
+        return ByIDResponse::fromPSR7Response($resp, $this->logger);
     }
 }

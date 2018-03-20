@@ -31,6 +31,6 @@ class PATCH extends AbstractPart implements MethodPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return PATCHResponse::fromPSR7Response($resp);
+        return PATCHResponse::fromPSR7Response($resp, $this->logger);
     }
 }

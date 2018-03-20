@@ -31,6 +31,6 @@ class Addresses extends AbstractPart implements UriPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return AddressesResponse::fromPSR7Response($resp);
+        return AddressesResponse::fromPSR7Response($resp, $this->logger);
     }
 }

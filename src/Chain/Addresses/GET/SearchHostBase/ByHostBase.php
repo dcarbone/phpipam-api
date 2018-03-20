@@ -50,6 +50,6 @@ class ByHostBase extends AbstractPart implements UriPart, ParamPart, ExecutableP
         if (null !== $err) {
             return [null, $err];
         }
-        return ByHostBaseResponse::fromPSR7Response($resp);
+        return ByHostBaseResponse::fromPSR7Response($resp, $this->logger);
     }
 }

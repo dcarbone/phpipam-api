@@ -31,6 +31,6 @@ class Expires extends AbstractPart implements UriPart, ExecutablePart {
         if (null !== $err) {
             return [null, $err];
         }
-        return ExpiresResponse::fromPSR7Response($resp);
+        return ExpiresResponse::fromPSR7Response($resp, $this->logger);
     }
 }

@@ -49,6 +49,6 @@ class DELETE extends AbstractPart implements MethodPart, HeaderPart, ExecutableP
         if (null !== $err) {
             return [null, $err];
         }
-        return DELETEResponse::fromPSR7Response($resp);
+        return DELETEResponse::fromPSR7Response($resp, $this->logger);
     }
 }

@@ -4,6 +4,7 @@ use DCarbone\Go\Time;
 use DCarbone\Go\Time\Duration;
 use MyENA\PHPIPAMAPI\Error\ResponseError;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class AbstractResponse
@@ -11,11 +12,11 @@ use Psr\Http\Message\ResponseInterface;
  */
 abstract class AbstractResponse {
     /** @var int */
-    private $code = 0;
+    protected $code = 0;
     /** @var bool */
-    private $success = false;
+    protected $success = false;
     /** @var \DCarbone\Go\Time\Duration */
-    private $time;
+    protected $time;
 
     /** @var mixed */
     protected $data;
@@ -41,12 +42,13 @@ abstract class AbstractResponse {
 
     /**
      * @param \Psr\Http\Message\ResponseInterface $response
+     * @param \Psr\Log\LoggerInterface $logger
      * @return array(
      * @type static                     Decoded response, if no errors were seen
      * @type \MyENA\PHPIPAMAPI\Error      Error description, if encountered
      * )
      */
-    public static function fromPSR7Response(ResponseInterface $response): array {
+    public static function fromPSR7Response(ResponseInterface $response, LoggerInterface $logger): array {
         // TODO: Don't like calling rewind here...
         $response->getBody()->rewind();
         $contents = $response->getBody()->getContents();
