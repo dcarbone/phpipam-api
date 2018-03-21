@@ -1,6 +1,13 @@
 <?php namespace MyENA\PHPIPAMAPI\Chain\Subnets\GET;
 
 use MyENA\PHPIPAMAPI\AbstractPart;
+use MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\Addresses;
+use MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\AllSubnets;
+use MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\FirstFree;
+use MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\FirstSubnet;
+use MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\Search;
+use MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\Slaves;
+use MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\Usage;
 use MyENA\PHPIPAMAPI\Parameter;
 use MyENA\PHPIPAMAPI\Part\ExecutablePart;
 use MyENA\PHPIPAMAPI\Part\ParamPart;
@@ -15,6 +22,55 @@ class ByID extends AbstractPart implements UriPart, ParamPart, ExecutablePart {
 
     /** @var \MyENA\PHPIPAMAPI\Parameter[] */
     private $parameters;
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\Addresses
+     */
+    public function Addresses(): Addresses {
+        return $this->newPart(Addresses::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\AllSubnets
+     */
+    public function AllSubnets(): AllSubnets {
+        return $this->newPart(AllSubnets::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\FirstFree
+     */
+    public function FirstFree(): FirstFree {
+        return $this->newPart(FirstFree::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\FirstSubnet
+     */
+    public function FirstSubnet(): FirstSubnet {
+        return $this->newPart(FirstSubnet::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\Search
+     */
+    public function Search(): Search {
+        return $this->newPart(Search::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\Slaves
+     */
+    public function Slaves(): Slaves {
+        return $this->newPart(Slaves::class);
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\Usage
+     */
+    public function Usage(): Usage {
+        return $this->newPart(Usage::class);
+    }
 
     /**
      * @return string

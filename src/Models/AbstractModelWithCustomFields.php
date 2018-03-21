@@ -6,7 +6,7 @@ use MyENA\PHPIPAMAPI\AbstractModel;
  * Class AbstractModelWithCustomFields
  * @package MyENA\PHPIPAMAPI\Models
  */
-abstract class AbstractModelWithCustomFields extends AbstractModel implements CustomFieldsContainerInterface {
+abstract class AbstractModelWithCustomFields extends AbstractModel {
     /** @var \MyENA\PHPIPAMAPI\Models\CustomField[] */
     protected $custom_fields = [];
 
@@ -19,7 +19,7 @@ abstract class AbstractModelWithCustomFields extends AbstractModel implements Cu
         if (!is_array($this->custom_fields)) {
             $this->custom_fields = [];
         }
-        foreach($this->custom_fields as $field => &$value) {
+        foreach ($this->custom_fields as $field => &$value) {
             $value = new CustomField($field, $value);
         }
     }
@@ -38,5 +38,16 @@ abstract class AbstractModelWithCustomFields extends AbstractModel implements Cu
      */
     public function getCustomField(string $field): ?CustomField {
         return $this->custom_fields[$field] ?? null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomFieldArray(): array {
+        $fields = [];
+        foreach ($this->custom_fields as $field) {
+            $fields[$field->getName()] = $field->getValue();
+        }
+        return $fields;
     }
 }

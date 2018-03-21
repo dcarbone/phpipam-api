@@ -74,7 +74,7 @@ the various Controllers and the development state:
 |[L2Domains](./src/Chain/L2DomainsController.php)|
 |[Prefix](./src/Chain/PrefixController.php)|
 |[Sections](./src/Chain/SectionsController.php)|
-|[Subnets](./src/Chain/SubnetsController.php)|
+|[Subnets](./src/Chain/SubnetsController.php)|Partial|
 |[Tools](./src/Chain/ToolsController.php)|
 |[User](./src/Chain/UserController.php)|Full|
 |[Vlans](./src/Chain/VlansController.php)|

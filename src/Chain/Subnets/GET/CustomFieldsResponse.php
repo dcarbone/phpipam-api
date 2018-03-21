@@ -1,10 +1,10 @@
-<?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\GET;
+<?php namespace MyENA\PHPIPAMAPI\Chain\Subnets\GET;
 
 use MyENA\PHPIPAMAPI\AbstractCustomFieldsResponse;
 
 /**
  * Class CustomFieldsResponse
- * @package MyENA\PHPIPAMAPI\Chain\Addresses\GET
+ * @package MyENA\PHPIPAMAPI\Chain\Subnets\GET
  */
 class CustomFieldsResponse extends AbstractCustomFieldsResponse {
 

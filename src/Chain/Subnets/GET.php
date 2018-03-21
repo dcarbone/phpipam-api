@@ -42,13 +42,6 @@ class GET extends AbstractPart implements MethodPart {
     }
 
     /**
-     * @return \MyENA\PHPIPAMAPI\Chain\Subnets\GET\Search
-     */
-    public function Search(): GET\Search {
-        return $this->newPart(GET\Search::class);
-    }
-
-    /**
      * @return string
      */
     public function getRequestMethod(): string {
