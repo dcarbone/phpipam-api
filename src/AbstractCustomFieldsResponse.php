@@ -12,8 +12,10 @@ abstract class AbstractCustomFieldsResponse extends AbstractResponse {
      */
     protected function parseData($data): void {
         $this->data = [];
-        foreach($data as $k => $datum) {
-            $this->data[$k] = new CustomFieldDefinition($datum);
+        if (is_array($data)) {
+            foreach ($data as $k => $datum) {
+                $this->data[$k] = new CustomFieldDefinition($datum);
+            }
         }
     }
 

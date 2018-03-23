@@ -4,11 +4,11 @@ use MyENA\PHPIPAMAPI\Parameter;
 use MyENA\PHPIPAMAPI\Parameter\Validator;
 
 /**
- * Class IPv4Validator
+ * Class MACValidator
  * @package MyENA\PHPIPAMAPI\Parameter\Validator
  */
-class IPv4Validator implements Validator {
-    const NAME = 'ipv4';
+class MACValidator implements Validator {
+    const NAME = 'mac';
 
     /**
      * @return string
@@ -23,6 +23,6 @@ class IPv4Validator implements Validator {
      */
     public function test(Parameter $parameter): bool {
         $v = $parameter->getValue();
-        return is_string($v) && filter_var($v, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+        return is_string($v) && filter_var($v, FILTER_VALIDATE_MAC);
     }
 }

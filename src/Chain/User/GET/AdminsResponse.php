@@ -13,8 +13,10 @@ class AdminsResponse extends AbstractResponse {
      */
     protected function parseData($data): void {
         $this->data = [];
-        foreach ($data as $datum) {
-            $this->data[] = new User($datum);
+        if (is_array($data)) {
+            foreach ($data as $datum) {
+                $this->data[] = new User($datum);
+            }
         }
     }
 

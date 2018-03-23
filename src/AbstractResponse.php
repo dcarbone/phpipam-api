@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
  * Class AbstractResponse
  * @package MyENA\PHPIPAMAPI
  */
-abstract class AbstractResponse {
+abstract class AbstractResponse implements \JsonSerializable {
     /** @var int */
     protected $code = 0;
     /** @var bool */
@@ -24,6 +24,9 @@ abstract class AbstractResponse {
     /** @var string|null */
     protected $message;
 
+    /** @var string|null */
+    protected $id;
+
     /**
      * AbstractResponse constructor.
      * @param int $code
@@ -31,12 +34,19 @@ abstract class AbstractResponse {
      * @param string $time
      * @param mixed $data
      * @param null|string $message
+     * @param null|string $id
      */
-    public function __construct(int $code, bool $success, string $time, $data = [], ?string $message = null) {
+    public function __construct(int $code,
+                                bool $success,
+                                string $time,
+                                $data = [],
+                                ?string $message = null,
+                                ?string $id = null) {
         $this->code = $code;
         $this->success = $success;
         $this->time = Time::ParseDuration("{$time}s");
         $this->message = $message;
+        $this->id = $id;
         $this->parseData($data);
     }
 
@@ -65,7 +75,8 @@ abstract class AbstractResponse {
                             $decoded['success'],
                             $decoded['time'],
                             $decoded['data'] ?? [],
-                            $decoded['message'] ?? null),
+                            $decoded['message'] ?? null,
+                            $decoded['id'] ?? null),
                         null,
                     ];
                 } else {
@@ -122,8 +133,51 @@ abstract class AbstractResponse {
      * @return null|string
      */
     public function getMessage(): ?string {
-        return $this->message;
+        return $this->message ?? null;
     }
+
+    /**
+     * @return null|string
+     */
+    public function getId(): ?string {
+        return $this->id ?? null;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize() {
+        $a = [
+            'code'    => $this->getCode(),
+            'success' => $this->isSuccess(),
+            'time'    => $this->getTime()->Seconds(),
+        ];
+        if (null !== ($msg = $this->getMessage())) {
+            $a['message'] = $msg;
+        }
+        if (null !== ($id = $this->getId())) {
+            $a['id'] = $id;
+        }
+        if (method_exists($this, 'getData')) {
+            $a['data'] = $this->getData();
+        }
+        return $a;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString() {
+        if (is_string($d = $this->getData())) {
+            return $d;
+        }
+        return get_class($this);
+    }
+
+    /**
+     * @return mixed
+     */
+    abstract public function getData();
 
     /**
      * @param mixed $data

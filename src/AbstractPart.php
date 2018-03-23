@@ -79,14 +79,27 @@ abstract class AbstractPart implements LoggerAwareInterface {
     }
 
     /**
+     * TODO: This may be required later, putting here just to get it in place...
+     *
+     * @return \MyENA\PHPIPAMAPI\AbstractPart[]
+     */
+    protected function buildParentList(): array {
+        $p = [];
+        foreach($this->parents as $parent) {
+            $p[] = clone $parent;
+        }
+        $p[] = clone $this;
+        return $p;
+    }
+
+    /**
      * @param string $class
      * @param array $parameters
      * @return \MyENA\PHPIPAMAPI\AbstractPart
      */
     protected function newPart(string $class, array $parameters = []): AbstractPart {
         /** @var \MyENA\PHPIPAMAPI\AbstractPart $np */
-        $p = $this->parents;
-        $p[] = $this;
+        $p = $this->buildParentList();
         $np = new $class($this->client, $this->logger, ...$p);
         if ($np instanceof ParamPart) {
             $np->parseParameters($np, $parameters);
@@ -158,19 +171,19 @@ abstract class AbstractPart implements LoggerAwareInterface {
      */
     protected function compileQueryParameters(): array {
         $queryParams = [];
-        if ($this instanceof ParamPart) {
-            foreach ($this->getParameters() as $parameter) {
-                if ($parameter->getLocation() === Parameter::IN_QUERY) {
-                    $queryParams[$parameter->getName()] = $parameter->getValue();
-                }
-            }
-        }
         foreach ($this->parents as $parent) {
             if ($parent instanceof ParamPart) {
                 foreach ($parent->getParameters() as $parameter) {
                     if ($parameter->getLocation() === Parameter::IN_QUERY) {
                         $queryParams[$parameter->getName()] = $parameter->getValue();
                     }
+                }
+            }
+        }
+        if ($this instanceof ParamPart) {
+            foreach ($this->getParameters() as $parameter) {
+                if ($parameter->getLocation() === Parameter::IN_QUERY) {
+                    $queryParams[$parameter->getName()] = $parameter->getValue();
                 }
             }
         }

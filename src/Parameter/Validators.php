@@ -2,6 +2,7 @@
 
 use MyENA\PHPIPAMAPI\Parameter\Validator\IntegerValidator;
 use MyENA\PHPIPAMAPI\Parameter\Validator\IPv4Validator;
+use MyENA\PHPIPAMAPI\Parameter\Validator\MACValidator;
 use MyENA\PHPIPAMAPI\Parameter\Validator\RequiredValidator;
 use MyENA\PHPIPAMAPI\Parameter\Validator\StringValidator;
 
@@ -20,6 +21,8 @@ abstract class Validators {
 
     /** @var \MyENA\PHPIPAMAPI\Parameter\Validator\IPv4Validator */
     private static $ipv4;
+    /** @var \MyENA\PHPIPAMAPI\Parameter\Validator\MACValidator */
+    private static $mac;
 
     /**
      * @return \MyENA\PHPIPAMAPI\Parameter\Validator\RequiredValidator
@@ -59,5 +62,15 @@ abstract class Validators {
             self::$ipv4 = new IPv4Validator();
         }
         return self::$ipv4;
+    }
+
+    /**
+     * @return \MyENA\PHPIPAMAPI\Parameter\Validator\MACValidator
+     */
+    public static function MAC(): MACValidator {
+        if (!isset(self::$mac)) {
+            self::$mac = new MACValidator();
+        }
+        return self::$mac;
     }
 }

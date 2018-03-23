@@ -12,13 +12,15 @@ class PATCHResponse extends AbstractResponse {
      * @param mixed $data
      */
     protected function parseData($data): void {
-        $this->data = UserSession::fromArray($data);
+        if (is_array($data)) {
+            $this->data = UserSession::fromArray($data);
+        }
     }
 
     /**
-     * @return \MyENA\PHPIPAMAPI\Models\UserSession
+     * @return \MyENA\PHPIPAMAPI\Models\UserSession|null
      */
-    public function getData(): UserSession {
-        return $this->data;
+    public function getData(): ?UserSession {
+        return $this->data ?? null;
     }
 }

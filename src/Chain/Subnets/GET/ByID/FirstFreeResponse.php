@@ -22,11 +22,4 @@ class FirstFreeResponse extends AbstractResponse {
     public function getData(): ?string {
         return $this->data ?? null;
     }
-
-    /**
-     * @return string
-     */
-    public function __toString() {
-        return $this->data ?? '';
-    }
 }

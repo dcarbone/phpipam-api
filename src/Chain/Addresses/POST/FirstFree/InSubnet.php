@@ -14,7 +14,7 @@ class InSubnet extends AbstractPart implements UriPart, ParamPart, ExecutablePar
     const PATH = '{subnetId}/';
 
     /** @var \MyENA\PHPIPAMAPI\Parameter[] */
-    private $parameters = [];
+    private $parameters;
 
     /**
      * @return string
@@ -37,6 +37,12 @@ class InSubnet extends AbstractPart implements UriPart, ParamPart, ExecutablePar
         return $this->parameters;
     }
 
+    /**
+     * @return array(
+     * @type \MyENA\PHPIPAMAPI\Chain\Addresses\POST\FirstFree\InSubnetResponse|null
+     * @type \MyENA\PHPIPAMAPI\Error|null
+     * )
+     */
     public function execute(): array {
         /** @var \Psr\Http\Message\ResponseInterface $resp */
         /** @var \MyENA\PHPIPAMAPI\Error $err */
@@ -44,7 +50,6 @@ class InSubnet extends AbstractPart implements UriPart, ParamPart, ExecutablePar
         if (null !== $err) {
             return [null, $err];
         }
-        var_dump($resp->getBody()->getContents());exit;
-        exit;
+        return InSubnetResponse::fromPSR7Response($resp, $this->logger);
     }
 }

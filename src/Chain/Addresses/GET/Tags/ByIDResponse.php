@@ -12,7 +12,9 @@ class ByIDResponse extends AbstractResponse {
      * @param mixed $data
      */
     protected function parseData($data): void {
-        $this->data = new IPTag($data);
+        if (is_array($data)) {
+            $this->data = new IPTag($data);
+        }
     }
 
     /**

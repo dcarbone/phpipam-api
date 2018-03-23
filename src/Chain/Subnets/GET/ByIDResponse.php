@@ -12,7 +12,7 @@ class ByIDResponse extends AbstractResponse {
      * @param mixed $data
      */
     protected function parseData($data): void {
-        if (null !== $data) {
+        if (is_array($data)) {
             $this->data = new Subnet($data);
         }
     }

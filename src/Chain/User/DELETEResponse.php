@@ -11,13 +11,9 @@ class DELETEResponse extends AbstractResponse {
      * @param mixed $data
      */
     protected function parseData($data): void {
-        if (!is_array($data)) {
-            throw new \DomainException(sprintf(
-                'DELETE /users/ expected "data" property to be object, saw %s',
-                gettype($data)
-            ));
+        if (is_array($data)) {
+            $this->data = $data;
         }
-        $this->data = $data;
     }
 
     /**

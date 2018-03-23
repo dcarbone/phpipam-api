@@ -13,8 +13,10 @@ class TagsResponse extends AbstractResponse {
      */
     protected function parseData($data): void {
         $this->data = [];
-        foreach ($data as $datum) {
-            $this->data[] = new IPTag($datum);
+        if (is_array($data)) {
+            foreach ($data as $datum) {
+                $this->data[] = new IPTag($datum);
+            }
         }
     }
 

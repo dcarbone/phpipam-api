@@ -12,7 +12,9 @@ class POSTResponse extends AbstractResponse {
      * @param array $data
      */
     protected function parseData($data): void {
-        $this->data = UserSession::fromArray($data);
+        if (is_array($data)) {
+            $this->data = UserSession::fromArray($data);
+        }
     }
 
     /**

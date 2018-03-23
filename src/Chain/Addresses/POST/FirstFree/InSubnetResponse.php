@@ -1,12 +1,13 @@
-<?php namespace MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\FirstSubnet;
+<?php namespace MyENA\PHPIPAMAPI\Chain\Addresses\POST\FirstFree;
+
 
 use MyENA\PHPIPAMAPI\AbstractResponse;
 
 /**
- * Class WithMaskResponse
- * @package MyENA\PHPIPAMAPI\Chain\Subnets\GET\ByID\FirstSubnet
+ * Class InSubnetResponse
+ * @package MyENA\PHPIPAMAPI\Chain\Addresses\POST\FirstFree
  */
-class WithMaskResponse extends AbstractResponse {
+class InSubnetResponse extends AbstractResponse {
     /**
      * @param mixed $data
      */

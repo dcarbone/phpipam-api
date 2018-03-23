@@ -206,7 +206,7 @@ class Client implements LoggerAwareInterface {
             $this->logger->debug("Query returned {$resp->getStatusCode()}: {$resp->getReasonPhrase()}");
         }
         $code = $resp->getStatusCode();
-        if (200 < $code || $code >= 300) {
+        if (200 > $code || $code >= 300) {
             return [$resp, new ApiError($code, $resp->getBody()->getContents())];
         }
         // if this request modifies user session information, try to prevent weirdness.
@@ -250,9 +250,6 @@ class Client implements LoggerAwareInterface {
                 ));
             }
             $this->clientUserSession = new UserSession($resp->getData()->getToken(), $resp->getData()->getExpires());
-            if (!$this->silent) {
-                $this->logger->info('Client token has been created');
-            }
         }
         return $this->clientUserSession ?? null;
     }
@@ -269,7 +266,7 @@ class Client implements LoggerAwareInterface {
             if (isset($this->clientUserSession) &&
                 $request->getHeaderLine(PHPIPAM_TOKEN_HEADER) === $this->clientUserSession->getToken()) {
                 if (!$this->silent) {
-                    $this->logger->info('Client token has been invalidated');
+                    $this->logger->info('Client token invalidated');
                 }
                 $this->clientUserSession = null;
             }
@@ -319,7 +316,7 @@ class Client implements LoggerAwareInterface {
             foreach ($r->parameters() as $k => $v) {
                 $params[] = "{$k}={$v}";
             }
-            $uri->withQuery(implode('&', $params));
+            $uri = $uri->withQuery(implode('&', $params));
         }
         return new PSR7Request(
             $r->method(),

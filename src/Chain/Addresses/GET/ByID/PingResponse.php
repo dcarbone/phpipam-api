@@ -12,7 +12,9 @@ class PingResponse extends AbstractResponse {
      * @param mixed $data
      */
     protected function parseData($data): void {
-        $this->data = new IPAddressPing($data);
+        if (is_array($data)) {
+            $this->data = new IPAddressPing($data);
+        }
     }
 
     /**
